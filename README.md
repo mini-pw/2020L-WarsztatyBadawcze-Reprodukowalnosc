@@ -19,23 +19,23 @@
 
 * 2020-03-27 - prezentacje II
 
-* 2020-03-24 - prezentacje III
+* 2020-03-24 - Praca Domowa I
 
-* 2020-03-31 - Praca Domowa I 
+* 2020-03-31 - [bookdown](https://bookdown.org/) + Praca Domowa II + projekt 
 
-* 2020-04-07 - [bookdown](https://bookdown.org/) + Praca Domowa II
+* 2020-04-07 - projekt
 
 * 2020-04-21 - projekt
 
-* 2020-04-28 - projekt
+* 2020-04-28 - Prezentacja metodologicznej części projektu I
 
-* 2020-05-05 - Prezentacja metodologicznej części projektu II
+* 2020-05-05 - Prezentacja metodologicznej części projektu II (termin oddania opisu części metodologicznej projektu)
 
-* 2020-05-19 - Prezentacja metodologicznej części projektu I
+* 2020-05-19 - projekt
 
 * 2020-05-26 - projekt
 
-* 2020-06-02 - projekt
+* 2020-06-02 - projekt (termin oddania całego projektu (artykułu))
 
 * 2020-06-09 - ?
 
@@ -47,7 +47,7 @@
 Należy wybrać artukuł z listy i przypisać się do niego w formularzu.
 Listę artykułów oraz link do formularza podam wkrótce.
 
-Prezentacje można wykonywać w pojedynkę lub w parach.
+Prezentacje trzeba wykonać w parach w parach.
 
 
 ## Prace Domowe (15 pkt.)
@@ -68,9 +68,14 @@ Założenie podrozdziału odpowiadającego artykułowi, który powstanie w ramac
 
 ## Projekt (55 pkt.)
 
-Celem projektu jest wykonanie analizy artykułów naukowych pod kątem reprodukowalności.
+Celem projektu jest wykonanie analizy artykułów naukowych pod kątem reprodukowalności. Projekt trzeba wykonać w grupie 3-osobowej.
 
 Wynikiem projektu powinien być krótki artykuł naukowy (40 pkt.), minimum 3 strony umieszczony jako rozdział książki online, która powstanie w ramach przedmiotu.
+Podział punktów w ramach artykułu
+- Abstrakt: 5 pkt.
+- Introduction + Motivation: 10 pkt
+- Opis metodologii i wyników: 15 pkt. (oddanie po 5.05.2020 max 10 pkt.)
+- Wnioski: 10 pkt.
 
 Projekt nalezy zaprezentować w postaci Lightning Talka na jednym z ostatnich wykładów (15 pkt.).
 
