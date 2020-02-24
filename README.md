@@ -15,9 +15,9 @@
     - [Open Science in Software Engineering](https://arxiv.org/pdf/1904.06499.pdf)
 
 
-* 2020-03-20 - prezentacje I
+* 2020-03-10 - prezentacje I
 
-* 2020-03-27 - prezentacje II
+* 2020-03-17 - prezentacje II
 
 * 2020-03-24 - Praca Domowa I + projekt
 
