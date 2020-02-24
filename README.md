@@ -19,11 +19,11 @@
 
 * 2020-03-27 - prezentacje II
 
-* 2020-03-24 - Praca Domowa I
+* 2020-03-24 - Praca Domowa I + projekt
 
-* 2020-03-31 - [bookdown](https://bookdown.org/) + Praca Domowa II + projekt 
+* 2020-03-31 - [bookdown](https://bookdown.org/) + Praca Domowa II + projekt
 
-* 2020-04-07 - projekt
+* 2020-04-07 - Praca Domowa III + projekt
 
 * 2020-04-21 - projekt
 
@@ -54,8 +54,9 @@ Prezentacje trzeba wykonać w parach w parach.
 
 Na każdą pracę domową jest czas do momentu rozpoczęcia kolejnych zajęć.
 
-### Praca Domowa I
-Spróbować (może się nie udać) zreprodukować co najmniej trzy wybrane artykuły naukowe (10 pkt. + 2 pkt. za znalezienie niereprodukowalnego i zidentyfikowanie przyczyny). Wyniki przesłać w formie raportu (pull request do forlderu PD).
+
+### Praca Domowa I (7 pkt.)
+Spróbować (może się nie udać) zreprodukować co najmniej trzy wybrane artykuły naukowe (5 pkt. + 2 pkt. za znalezienie niereprodukowalnego i zidentyfikowanie przyczyny). Wyniki przesłać w formie raportu (pull request do forlderu PD).
 
 Journale do wybioru. Mozna wziąć artykuły z jednego lub kilku.
 - [The R Journal](https://journal.r-project.org/)
@@ -63,8 +64,11 @@ Journale do wybioru. Mozna wziąć artykuły z jednego lub kilku.
 - [Journal of Computational and Graphical Statistics](https://www.tandfonline.com/toc/ucgs20/current)
 
 ### Praca Domowa II (3 pkt.)
-Założenie podrozdziału odpowiadającego artykułowi, który powstanie w ramach projektu.
+Założenie podrozdziału odpowiadającego artykułowi, który powstanie w ramach projektu. Wybrać deskryptywny tytuł artykułu.
 
+### Praca Domowa III (5 pkt.)
+Napisać Related Work artykułów dotyczących reprodukowalności.
+Umieścić Related Work w książce w odpowiednim artykule.
 
 ## Projekt (55 pkt.)
 
