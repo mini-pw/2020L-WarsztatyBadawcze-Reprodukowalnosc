@@ -8,7 +8,7 @@
     - [Dot-Pipe: an S3 Extensible Pipe for R](https://journal.r-project.org/archive/2018/RJ-2018-042/RJ-2018-042.pdf)
 
 * 2020-03-03 - Po co nam reprodukowalność?
-    - [A Step Toward Quantifying Independently Reproducible Machine Learning Research])(https://arxiv.org/pdf/1909.06674.pdf)
+    - [A Step Toward Quantifying Independently Reproducible Machine Learning Research](https://arxiv.org/pdf/1909.06674.pdf)
     - [Open Science in Software Engineering](https://arxiv.org/pdf/1904.06499.pdf)
 
 
