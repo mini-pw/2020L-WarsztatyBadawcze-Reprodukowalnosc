@@ -83,6 +83,15 @@ Podział punktów w ramach artykułu
 
 Projekt nalezy zaprezentować w postaci Lightning Talka na jednym z ostatnich wykładów (15 pkt.).
 
+Pomysły na pytania badawcze, najlepiej uwzględnić kilka:
+- Jak zmierzyć reprodukowalność? Czy jest zero-jedynkowa? A może procentowa?
+- Jak zmienia się reprodukowalność w zależności od roku wydania artykułu, czasopisma, języka progamowania?
+- Czy autorzy są responsywni? Czy pomagają przy problemach z kodem (e-mail, issue na GitHubie)? Czy oprogramowanie jest nadal rozwijane (np. GitHub, nowe wersje na CRAN, PyPI)?
+- Czy można zaproponować postulaty reprodukowalności? Czy da się stworzyć chcecklistę, którą powinny spełniać artykuły? Jaki procent artykułów by ją spełniał? Na ile jest uniwersalna?
+- Czy da się w analizach uwzględnić długość artykułu, liczbę autorów, afiliację?
+- ...
+Własne pomysły BARDZO mile widziane.
+
 ## Blog (15 pkt.)
 
 Informacje w [repzytorium Wykładu](https://github.com/mini-pw/2020L-WarsztatyBadawcze)
