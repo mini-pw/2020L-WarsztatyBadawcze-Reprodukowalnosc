@@ -27,9 +27,9 @@
 
 * 2020-04-28 - Prezentacja metodologicznej części projektu I
 
-* 2020-05-05 - Prezentacja metodologicznej części projektu II (termin oddania opisu części metodologicznej projektu)
+* 2020-05-05 - Prezentacja metodologicznej części projektu II
 
-* 2020-05-19 - projekt
+* 2020-05-19 - projekt (termin oddania opisu części metodologicznej projektu)
 
 * 2020-05-26 - projekt
 
