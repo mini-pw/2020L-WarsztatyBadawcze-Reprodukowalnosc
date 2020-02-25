@@ -5,8 +5,6 @@
 ## Plan Zajęć
 
 * 2020-02-25 - O co chodzi z artykułami naukowymi?
-    - [Connecting R with D3 for dynamic graphics, to explore multivariate data with tours](https://journal.r-project.org/archive/2019/RJ-2019-002/RJ-2019-002.pdf) 
-    - [stplanr: A Package for Transport Planning](https://journal.r-project.org/archive/2018/RJ-2018-053/RJ-2018-053.pdf)
     - [ggplot2 Compatible Quantile-Quantile Plots in R](https://journal.r-project.org/archive/2018/RJ-2018-051/RJ-2018-051.pdf)
     - [Dot-Pipe: an S3 Extensible Pipe for R](https://journal.r-project.org/archive/2018/RJ-2018-042/RJ-2018-042.pdf)
 
@@ -90,7 +88,8 @@ Pomysły na pytania badawcze, najlepiej uwzględnić kilka:
 - Czy można zaproponować postulaty reprodukowalności? Czy da się stworzyć chcecklistę, którą powinny spełniać artykuły? Jaki procent artykułów by ją spełniał? Na ile jest uniwersalna?
 - Czy da się w analizach uwzględnić długość artykułu, liczbę autorów, afiliację?
 - ...
-Własne pomysły BARDZO mile widziane.
+
+Własne pomysły bardzo mile widziane.
 
 ## Blog (15 pkt.)
 
