@@ -83,6 +83,7 @@ Projekt nalezy zaprezentować w postaci Lightning Talka na jednym z ostatnich wy
 
 Pomysły na pytania badawcze, najlepiej uwzględnić kilka:
 - Jak zmierzyć reprodukowalność? Czy jest zero-jedynkowa? A może procentowa?
+- Czy są różne rodzaje niereprodukowalności? Czy można zaproponować jakąś klasyfikację problemów z odtwarzaniem wyników?
 - Jak zmienia się reprodukowalność w zależności od roku wydania artykułu, czasopisma, języka progamowania?
 - Czy autorzy są responsywni? Czy pomagają przy problemach z kodem (e-mail, issue na GitHubie)? Czy oprogramowanie jest nadal rozwijane (np. GitHub, nowe wersje na CRAN, PyPI)?
 - Czy można zaproponować postulaty reprodukowalności? Czy da się stworzyć chcecklistę, którą powinny spełniać artykuły? Jaki procent artykułów by ją spełniał? Na ile jest uniwersalna?
