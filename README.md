@@ -14,9 +14,8 @@
     - [Open Science in Software Engineering](https://arxiv.org/pdf/1904.06499.pdf)
     - [DATA 598 A Wi 20: Special Topics In Data Science: Reproducibility for Data Science](https://canvas.uw.edu/courses/1354201)
 
-
 * 2020-03-10 - prezentacje I
-
+    
 * 2020-03-17 - prezentacje II
 
 * 2020-03-24 - Praca Domowa I + projekt
@@ -44,11 +43,26 @@
 
 ## Prezentacje (15 pkt.)
 
-Należy wybrać artukuł z listy i przypisać się do niego w formularzu.
-Listę artykułów oraz link do formularza podam wkrótce.
+Prezentacje trzeba wykonać w parach.
+Należy wybrać artykuł z listy:
 
-Prezentacje trzeba wykonać w parach w parach.
+    - [Integration of networks and pathways with StarBioTrek package](https://journal.r-project.org/archive/2019/RJ-2019-025/index.html)
+    - [stplanr: A Package for Transport Planning](https://journal.r-project.org/archive/2018/RJ-2018-053/index.html)
+    - [RcppMsgPack: MessagePack Headers and Interface Functions for R](https://journal.r-project.org/archive/2018/RJ-2018-068/index.html)
+    - [Geospatial Point Density](https://journal.r-project.org/archive/2018/RJ-2018-061/index.html)
+    - [neuralnet: Training of Neural Networks](https://journal.r-project.org/archive/2010/RJ-2010-006/index.html)
+    - [Mapping and Measuring Country Shapes](https://journal.r-project.org/archive/2010/RJ-2010-004/index.html)
+    - [tmap: Thematic Maps in R](https://www.jstatsoft.org/article/view/v084i06)
+    - [Conditional Visualization for Statistical Models: An Introduction to the condvis Package in R](https://www.jstatsoft.org/article/view/v081i05)
+    - [Enhancing Reproducibility and Collaboration via Management of R Package Cohorts](https://www.jstatsoft.org/article/view/v082i01)
+    - [archivist: An R Package for Managing, Recording and Restoring Data Analysis Results](https://www.jstatsoft.org/article/view/v082i11)
+    - [The Generalized Pairs Plot](https://www.tandfonline.com/doi/full/10.1080/10618600.2012.694762)
+    - [Visualizing Complex Data With Embedded Plots](https://amstat.tandfonline.com/doi/full/10.1080/10618600.2014.896808)
 
+Prezentacja powinna trwać do 12 min. + 3 min. na dyskusję.
+Powinna zawierać wprowadzenie do tematu i opis wyników arytkułu oraz informację, czy udało się zreprodukować wyniki (dyskusja o problemach i spostrzeżeniach dotczących reprodukowalności mile widziana).
+
+Przed rozpoczęciem zajęć proszę o PR slajdów (w PDF) do folderu Prezentacje.
 
 ## Prace Domowe (15 pkt.)
 
@@ -56,7 +70,7 @@ Na każdą pracę domową jest czas do momentu rozpoczęcia kolejnych zajęć.
 
 
 ### Praca Domowa I (7 pkt.)
-Spróbować (może się nie udać) zreprodukować co najmniej trzy wybrane artykuły naukowe (5 pkt. + 2 pkt. za znalezienie niereprodukowalnego i zidentyfikowanie przyczyny). Wyniki przesłać w formie raportu (pull request do forlderu PD).
+Spróbować (może się nie udać) zreprodukować co najmniej trzy wybrane artykuły naukowe (5 pkt. + 2 pkt. za znalezienie niereprodukowalnego i zidentyfikowanie przyczyny). Wyniki przesłać w formie raportu (pull request do folderu PD).
 
 Journale do wybioru. Mozna wziąć artykuły z jednego lub kilku.
 - [The R Journal](https://journal.r-project.org/)
@@ -87,12 +101,24 @@ Pomysły na pytania badawcze, najlepiej uwzględnić kilka:
 - Jak zmierzyć reprodukowalność? Czy jest zero-jedynkowa? A może procentowa?
 - Czy są różne rodzaje niereprodukowalności? Czy można zaproponować jakąś klasyfikację problemów z odtwarzaniem wyników?
 - Jak zmienia się reprodukowalność w zależności od roku wydania artykułu, czasopisma, języka progamowania?
+- Może ograniczyć analizę tylko do wąskiej technologii? Na ile aplikacje Shiny umieszczone w artykułach nadal działają?
 - Czy autorzy są responsywni? Czy pomagają przy problemach z kodem (e-mail, issue na GitHubie)? Czy oprogramowanie jest nadal rozwijane (np. GitHub, nowe wersje na CRAN, PyPI)?
 - Czy można zaproponować postulaty reprodukowalności? Czy da się stworzyć chcecklistę, którą powinny spełniać artykuły? Jaki procent artykułów by ją spełniał? Na ile jest uniwersalna?
 - Czy da się w analizach uwzględnić długość artykułu, liczbę autorów, afiliację?
 - ...
 
 Własne pomysły bardzo mile widziane.
+
+
+Czasopisma, którymi można się zajmować:
+    - [The R Journal](https://journal.r-project.org/)
+    - [Journal of Statistical Software](https://www.jstatsoft.org/article/view/v083i11)
+    - [Journal of Machine Learning Research](http://www.jmlr.org/), szczególnie część [Machine Learning Open Source Software
+](http://www.jmlr.org/mloss/)
+    - [Journal of Computational and Graphical Statistics](https://www.tandfonline.com/toc/ucgs20/current)
+choć można i innymi :)
+
+
 
 ## Blog (15 pkt.)
 
