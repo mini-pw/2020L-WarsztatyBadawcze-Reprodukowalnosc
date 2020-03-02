@@ -8,11 +8,17 @@
     - [ggplot2 Compatible Quantile-Quantile Plots in R](https://journal.r-project.org/archive/2018/RJ-2018-051/RJ-2018-051.pdf)
     - [Dot-Pipe: an S3 Extensible Pipe for R](https://journal.r-project.org/archive/2018/RJ-2018-042/RJ-2018-042.pdf)
 
-* 2020-03-03 - Po co nam reprodukowalność? + Podział prezentacjami
-    - [Quantifying Independently Reproducible Machine Learning](https://thegradient.pub/independently-reproducible-machine-learning/)
-    - [A Step Toward Quantifying Independently Reproducible Machine Learning Research](https://arxiv.org/pdf/1909.06674.pdf)
+* 2020-03-03 - Reprodukowalność? + Podział prezentacjami + Więcej o projekcie
+    - [Reproducibility in Science](http://ropensci.github.io/reproducibility-guide/)
+    - [Best Practices for Computational Science: Software Infrastructure and Environments for Reproducible and Extensible Research](https://openresearchsoftware.metajnl.com/articles/10.5334/jors.ay/)
     - [Open Science in Software Engineering](https://arxiv.org/pdf/1904.06499.pdf)
     - [DATA 598 A Wi 20: Special Topics In Data Science: Reproducibility for Data Science](https://canvas.uw.edu/courses/1354201)
+    - [rrtools: Tools for Writing Reproducible Research in R](https://github.com/benmarwick/rrtools)
+    - [Packaging Data Analytical Work Reproducibly Using R (and Friends)](https://amstat.tandfonline.com/doi/abs/10.1080/00031305.2017.1375986)
+
+    Reprodukowalność w uczeniu maszynowym:
+    - [Quantifying Independently Reproducible Machine Learning](https://thegradient.pub/independently-reproducible-machine-learning/)
+    
 
 * 2020-03-10 - prezentacje I
     
@@ -46,6 +52,7 @@
 Prezentacje trzeba wykonać w parach.
 Należy wybrać artykuł z listy:
 
+- [Debugging grid Graphics](https://journal.r-project.org/archive/2012/RJ-2012-013/index.html)
 - [Integration of networks and pathways with StarBioTrek package](https://journal.r-project.org/archive/2019/RJ-2019-025/index.html)
 - [stplanr: A Package for Transport Planning](https://journal.r-project.org/archive/2018/RJ-2018-053/index.html)
 - [RcppMsgPack: MessagePack Headers and Interface Functions for R](https://journal.r-project.org/archive/2018/RJ-2018-068/index.html)
@@ -88,7 +95,8 @@ Umieścić Related Work w książce w odpowiednim artykule.
 
 Celem projektu jest wykonanie analizy artykułów naukowych pod kątem reprodukowalności. Projekt trzeba wykonać w grupie 3-osobowej.
 
-Wynikiem projektu powinien być krótki artykuł naukowy (40 pkt.), minimum 3 strony umieszczony jako rozdział książki online, która powstanie w ramach przedmiotu.
+Wynikiem projektu powinien być krótki artykuł naukowy (40 pkt.), minimum 3 strony umieszczony jako rozdział książki online, która powstanie w ramach przedmiotu. Na wzór książki [Limitations of Interpretable Machine Learning Methods](https://compstat-lmu.github.io/iml_methods_limitations/).
+
 Podział punktów w ramach artykułu
 - Abstrakt: 5 pkt.
 - Introduction + Motivation: 10 pkt
@@ -103,7 +111,8 @@ Pomysły na pytania badawcze, najlepiej uwzględnić kilka:
 - Jak zmienia się reprodukowalność w zależności od roku wydania artykułu, czasopisma, języka progamowania?
 - Może ograniczyć analizę tylko do wąskiej technologii? Na ile aplikacje Shiny umieszczone w artykułach nadal działają?
 - Czy autorzy są responsywni? Czy pomagają przy problemach z kodem (e-mail, issue na GitHubie)? Czy oprogramowanie jest nadal rozwijane (np. GitHub, nowe wersje na CRAN, PyPI)?
-- Czy można zaproponować postulaty reprodukowalności? Czy da się stworzyć chcecklistę, którą powinny spełniać artykuły? Jaki procent artykułów by ją spełniał? Na ile jest uniwersalna?
+- Czy można zaproponować postulaty reprodukowalności? Czy da się stworzyć chcecklistę, którą powinny spełniać artykuły? Jaki procent artykułów by ją spełniał? Na ile jest uniwersalna? Za inspirację może służyć [checklista](http://ropensci.github.io/reproducibility-guide/sections/checklist/) z [Reproducibility in Science](http://ropensci.github.io/reproducibility-guide/)
+
 - Czy da się w analizach uwzględnić długość artykułu, liczbę autorów, afiliację?
 - ...
 
