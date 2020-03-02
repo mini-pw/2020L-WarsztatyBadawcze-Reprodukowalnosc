@@ -46,18 +46,18 @@
 Prezentacje trzeba wykonać w parach.
 Należy wybrać artykuł z listy:
 
-    - [Integration of networks and pathways with StarBioTrek package](https://journal.r-project.org/archive/2019/RJ-2019-025/index.html)
-    - [stplanr: A Package for Transport Planning](https://journal.r-project.org/archive/2018/RJ-2018-053/index.html)
-    - [RcppMsgPack: MessagePack Headers and Interface Functions for R](https://journal.r-project.org/archive/2018/RJ-2018-068/index.html)
-    - [Geospatial Point Density](https://journal.r-project.org/archive/2018/RJ-2018-061/index.html)
-    - [neuralnet: Training of Neural Networks](https://journal.r-project.org/archive/2010/RJ-2010-006/index.html)
-    - [Mapping and Measuring Country Shapes](https://journal.r-project.org/archive/2010/RJ-2010-004/index.html)
-    - [tmap: Thematic Maps in R](https://www.jstatsoft.org/article/view/v084i06)
-    - [Conditional Visualization for Statistical Models: An Introduction to the condvis Package in R](https://www.jstatsoft.org/article/view/v081i05)
-    - [Enhancing Reproducibility and Collaboration via Management of R Package Cohorts](https://www.jstatsoft.org/article/view/v082i01)
-    - [archivist: An R Package for Managing, Recording and Restoring Data Analysis Results](https://www.jstatsoft.org/article/view/v082i11)
-    - [The Generalized Pairs Plot](https://www.tandfonline.com/doi/full/10.1080/10618600.2012.694762)
-    - [Visualizing Complex Data With Embedded Plots](https://amstat.tandfonline.com/doi/full/10.1080/10618600.2014.896808)
+- [Integration of networks and pathways with StarBioTrek package](https://journal.r-project.org/archive/2019/RJ-2019-025/index.html)
+- [stplanr: A Package for Transport Planning](https://journal.r-project.org/archive/2018/RJ-2018-053/index.html)
+- [RcppMsgPack: MessagePack Headers and Interface Functions for R](https://journal.r-project.org/archive/2018/RJ-2018-068/index.html)
+- [Geospatial Point Density](https://journal.r-project.org/archive/2018/RJ-2018-061/index.html)
+- [neuralnet: Training of Neural Networks](https://journal.r-project.org/archive/2010/RJ-2010-006/index.html)
+- [Mapping and Measuring Country Shapes](https://journal.r-project.org/archive/2010/RJ-2010-004/index.html)
+- [tmap: Thematic Maps in R](https://www.jstatsoft.org/article/view/v084i06)
+- [Conditional Visualization for Statistical Models: An Introduction to the condvis Package in R](https://www.jstatsoft.org/article/view/v081i05)
+- [Enhancing Reproducibility and Collaboration via Management of R Package Cohorts](https://www.jstatsoft.org/article/view/v082i01)
+- [archivist: An R Package for Managing, Recording and Restoring Data Analysis Results](https://www.jstatsoft.org/article/view/v082i11)
+- [The Generalized Pairs Plot](https://www.tandfonline.com/doi/full/10.1080/10618600.2012.694762)
+- [Visualizing Complex Data With Embedded Plots](https://amstat.tandfonline.com/doi/full/10.1080/10618600.2014.896808)
 
 Prezentacja powinna trwać do 12 min. + 3 min. na dyskusję.
 Powinna zawierać wprowadzenie do tematu i opis wyników arytkułu oraz informację, czy udało się zreprodukować wyniki (dyskusja o problemach i spostrzeżeniach dotczących reprodukowalności mile widziana).
