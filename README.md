@@ -1,4 +1,4 @@
-# 2019L Warsztaty Badawcze Reprodukowalność
+# 2020L Warsztaty Badawcze Reprodukowalność
 
 ## [Wykład Warsztatów Badawczych](https://github.com/mini-pw/2020L-WarsztatyBadawcze)
 
