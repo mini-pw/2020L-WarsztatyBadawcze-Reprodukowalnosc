@@ -5,8 +5,8 @@
 ## Plan Zajęć
 
 * 2020-02-25 - O co chodzi z artykułami naukowymi?
-    - [ggplot2 Compatible Quantile-Quantile Plots in R](https://journal.r-project.org/archive/2018/RJ-2018-051/RJ-2018-051.pdf)
-    - [Dot-Pipe: an S3 Extensible Pipe for R](https://journal.r-project.org/archive/2018/RJ-2018-042/RJ-2018-042.pdf)
+    - [ggplot2 Compatible Quantile-Quantile Plots in R](https://journal.r-project.org/archive/2018/RJ-2018-051/RJ-2018-051.pdf) ([backup](http://rjournal.github.io/archive/2018/RJ-2018-051/index.html))
+    - [Dot-Pipe: an S3 Extensible Pipe for R](https://journal.r-project.org/archive/2018/RJ-2018-042/RJ-2018-042.pdf) ([backup](http://rjournal.github.io/archive/2018/RJ-2018-042/index.html))
 
 * 2020-03-03 - Reprodukowalność? + Podział prezentacjami + Więcej o projekcie
     - [Reproducibility in Science](http://ropensci.github.io/reproducibility-guide/)
@@ -83,6 +83,7 @@ Journale do wybioru. Mozna wziąć artykuły z jednego lub kilku.
 - [The R Journal](https://journal.r-project.org/)
 - [Machine Learning Open Source Software in Journal of Machine Learning Research](http://www.jmlr.org/mloss/)
 - [Journal of Computational and Graphical Statistics](https://www.tandfonline.com/toc/ucgs20/current)
+- [Journal of Statistical Software](https://www.jstatsoft.org/article/view/v083i11)
 
 ### Praca Domowa II (3 pkt.)
 Założenie podrozdziału odpowiadającego artykułowi, który powstanie w ramach projektu. Wybrać deskryptywny tytuł artykułu.
@@ -120,11 +121,11 @@ Własne pomysły bardzo mile widziane.
 
 
 Czasopisma, którymi można się zajmować:
-    - [The R Journal](https://journal.r-project.org/)
-    - [Journal of Statistical Software](https://www.jstatsoft.org/article/view/v083i11)
-    - [Journal of Machine Learning Research](http://www.jmlr.org/), szczególnie część [Machine Learning Open Source Software
+- [The R Journal](https://journal.r-project.org/)
+- [Journal of Statistical Software](https://www.jstatsoft.org/article/view/v083i11)
+- [Journal of Machine Learning Research](http://www.jmlr.org/), szczególnie część [Machine Learning Open Source Software
 ](http://www.jmlr.org/mloss/)
-    - [Journal of Computational and Graphical Statistics](https://www.tandfonline.com/toc/ucgs20/current)
+- [Journal of Computational and Graphical Statistics](https://www.tandfonline.com/toc/ucgs20/current)
 choć można i innymi :)
 
 
