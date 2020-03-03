@@ -67,7 +67,7 @@ Należy wybrać artykuł z listy:
 - [Visualizing Complex Data With Embedded Plots](https://amstat.tandfonline.com/doi/full/10.1080/10618600.2014.896808)
 
 Prezentacja powinna trwać do 12 min. + 3 min. na dyskusję.
-Powinna zawierać wprowadzenie do tematu i opis wyników arytkułu oraz informację, czy udało się zreprodukować wyniki (dyskusja o problemach i spostrzeżeniach dotczących reprodukowalności mile widziana).
+Powinna zawierać wprowadzenie do tematu i opis wyników arytkułu (10 pkt.) oraz dyskusję, czy udało się zreprodukować wyniki wraz z raportem w pdf (5 pkt.), w szczególności czy były problemy i spostrzeżeniaa dotczące reprodukowalności. 
 
 Przed rozpoczęciem zajęć proszę o PR slajdów (w PDF) do folderu Prezentacje.
 
