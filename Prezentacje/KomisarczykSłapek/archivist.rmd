@@ -30,7 +30,7 @@ createLocalRepo(repoDir = repo, default = TRUE, force=TRUE)
 Wynik polecenia:
 
 ```{r warnings=FALSE, echo=FALSE}
-knitr::include_graphics('repo.png')
+knitr::include_graphics('images/repo.png')
 ```
 Repozytorium rzeczywiście powstaje.
 
@@ -44,7 +44,7 @@ deleteLocalRepo(repoDir = repo)
 ```
 
 ```{r warnings=FALSE, echo=FALSE}
-knitr::include_graphics('deleteRepo.jpg')
+knitr::include_graphics('images/deleteRepo.jpg')
 ```
 
 ## Kopiowanie zmiennych z innego repozytorium
@@ -60,7 +60,7 @@ copyRemoteRepo(repoTo = repo, md5hashes= "7f3453331910e3f321ef97d87adb5bad",
 Wynik polecenia:
 
 ```{r warnings=FALSE, echo=FALSE}
-knitr::include_graphics('copyRepo.jpg')
+knitr::include_graphics('images/copyRepo.jpg')
 ```
 
 Ponadto można stworzyć archiwum zip zawierające całe repozytorium funkcjami `zipLocalRepo` i `zipRemoteRepo`.
@@ -258,7 +258,7 @@ if (interactive()) {
 Wynik polecenia:
 
 ```{r warnings=FALSE, echo=FALSE}
-knitr::include_graphics('shiny.png')
+knitr::include_graphics('images/shiny.png')
 ```
 
 
