@@ -1,0 +1,239 @@
+---
+title: ''
+author: "Zuzanna Mróz"
+date: "3/3/2020"
+output: pdf_document
+---
+
+# DOT PIPE
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library("wrapr")
+5 %.>% sin(.)
+```
+
+```{r}
+print(.)
+```
+
+
+```{r}
+5 %.>% {1 + .}
+```
+
+
+```{r}
+5 %.>% (1 + .)
+```
+
+
+```{r}
+ library("dplyr")
+disp <- 4
+mtcars %.>%
+filter(., .data$cyl == .env$disp) %.>%
+nrow(.)
+```
+
+```{r}
+library("ggplot2")
+apply_left.gg <- function(pipe_left_arg,
+pipe_right_arg,
+pipe_environment,
+left_arg_name,
+pipe_string,
+right_arg_name) {
+pipe_right_arg <- eval(pipe_right_arg,
+envir = pipe_environment,
+enclos = pipe_environment)
+pipe_left_arg + pipe_right_arg
+}
+```
+
+```{r}
+data.frame(x = 1:20) %.>%
+mutate(., y = cos(3*x)) %.>%
+ggplot(., aes(x = x, y = y)) %.>%
+geom_point() %.>%
+geom_line() %.>%
+ggtitle("piped ggplot2",
+subtitle = "wrapr")
+```
+
+```{r}
+library("rquery")
+optree <- mk_td(table_name = "d", columns = "x") %.>%
+extend_nse(., y = cos(2*x))
+```
+
+```{r}
+class(optree)
+```
+
+
+```{r}
+print(optree)
+```
+
+
+```{r}
+column_names(optree)
+```
+
+```{r}
+columns_used(optree)
+```
+
+```{r}
+ # get a database connection
+ db = DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+ # make our db connection available to rquery package
+ options(list("rquery.rquery_db_executor" = list(db = db)))
+ data.frame(x = 1:3) %.>% optree # apply optree to d
+```
+
+```{r}
+d1 <- data.frame(x = 1)
+ d2 <- data.frame(x = 2)
+ tryCatch(
+ d1 %.>% d2,
+ error = function(e) { invisible(cat(format(e))) })
+```
+
+
+```{r}
+ setMethod(
+ "apply_right_S4",
+ signature = c("data.frame", "data.frame"),
+ definition = function(pipe_left_arg,
+ pipe_right_arg,
+ pipe_environment,
+ left_arg_name,
+ pipe_string,
+ right_arg_name) {
+ rbind(pipe_left_arg, pipe_right_arg)
+ })
+ d1 %.>% d2
+```
+
+
+```{r}
+d1 %.>% data.frame(x = 2)
+```
+
+
+```{r}
+library("magrittr")
+ 5 %>% sin
+```
+
+
+```{r}
+ `%userpipe%` <- magrittr::`%>%`
+ tryCatch(
+ 5 %userpipe% sin,
+ error = function(e) {e})
+```
+
+
+```{r}
+ `%userpipe%` <- wrapr::`%.>%`
+ 5 %userpipe% sin
+```
+
+
+```{r}
+ library("magrittr")
+ 5 %>% substitute
+```
+
+```{r}
+ tryCatch(
+ 5 %>% base::sin,
+ error = function(e) {e})
+```
+
+
+```{r}
+library("wrapr")
+ 5 %.>% substitute
+```
+
+
+```{r}
+5 %.>% base::sin
+```
+
+```{r}
+ d <- data.frame(x = 1:5, y = c(1, 1, 0, 1, 0))
+ model <- glm(y~x, family = binomial, data = d)
+ apply_right.glm <-
+ function(pipe_left_arg,
+ pipe_right_arg,
+ pipe_environment,
+ left_arg_name,
+ pipe_string,
+ right_arg_name) {
+ predict(pipe_right_arg,
+ newdata = pipe_left_arg,
+ type = 'response')
+ }
+ data.frame(x = c(1, 3)) %.>% model
+```
+
+
+```{r}
+ # get a database connection
+ db = DBI::dbConnect(RSQLite::SQLite(),
+ ":memory:")
+ apply_right.SQLiteConnection <-
+ function(pipe_left_arg,
+ pipe_right_arg,
+ pipe_environment,
+ left_arg_name,
+ pipe_string,
+ right_arg_name) {
+ DBI::dbGetQuery(pipe_right_arg, pipe_left_arg)
+ }
+ "SELECT * FROM sqlite_temp_master" %.>% db
+```
+
+
+```{r}
+ apply_left.character <- function(pipe_left_arg,
+ pipe_right_arg,
+ pipe_environment,
+ left_arg_name,
+ pipe_string,
+ right_arg_name) {
+ pipe_right_arg <- eval(pipe_right_arg,
+ envir = pipe_environment,
+ enclos = pipe_environment)
+ paste0(pipe_left_arg, pipe_right_arg)
+ }
+ "a" %.>% "b" %.>% "c"
+```
+
+
+```{r}
+ apply_left.formula <- function(pipe_left_arg,
+ pipe_right_arg,
+ pipe_environment,
+ left_arg_name,
+ pipe_string,
+ right_arg_name) {
+ pipe_right_arg <- eval(pipe_right_arg,
+ envir = pipe_environment,
+ enclos = pipe_environment)
+ pipe_right_arg <- paste(pipe_right_arg, collapse = " + ")
+ update(pipe_left_arg, paste(" ~ . +", pipe_right_arg))
+ }
+ (y~a) %.>% c("b", "c", "d") %.>% "e"
+```
+
+
