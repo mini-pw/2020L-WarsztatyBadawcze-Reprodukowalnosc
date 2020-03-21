@@ -77,9 +77,14 @@ Na każdą pracę domową jest czas do momentu rozpoczęcia kolejnych zajęć.
 
 
 ### Praca Domowa I (7 pkt.)
-Spróbować (może się nie udać) zreprodukować co najmniej trzy wybrane artykuły naukowe (5 pkt. + 2 pkt. za znalezienie niereprodukowalnego i zidentyfikowanie przyczyny). Wyniki przesłać w formie raportu (pull request do folderu PD).
+Termin: 31 marca
 
-Journale do wybioru. Mozna wziąć artykuły z jednego lub kilku.
+Spróbować zreprodukować co najmniej trzy wybrane artykuły naukowe (5 pkt. + 2 pkt. za znalezienie niereprodukowalnego i zidentyfikowanie przyczyny). Wyniki przesłać w formie raportu (pull request do folderu PD). Polecam napisanie raportu w języku angielskim, będzie to pomocne, gdyż projekt będzie artykułem naukowym w języku angielskim.
+
+Warto już teraz zastanowić się nad konkretym zagadnieniem poruszanym w projekcie i pod tym kątem wybrać artykuły do zreprodukowania.
+
+
+Journale do wyboru. Mozna wziąć artykuły z jednego lub kilku.
 - [The R Journal](https://journal.r-project.org/)
 - [Machine Learning Open Source Software in Journal of Machine Learning Research](http://www.jmlr.org/mloss/)
 - [Journal of Computational and Graphical Statistics](https://www.tandfonline.com/toc/ucgs20/current)
