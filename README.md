@@ -78,6 +78,7 @@ Na każdą pracę domową jest czas do momentu rozpoczęcia kolejnych zajęć.
 
 ### Praca Domowa I (7 pkt.)
 Termin: 31 marca
+Oddanie pracy domowej: indywidualnie
 
 Spróbować zreprodukować co najmniej trzy wybrane artykuły naukowe (5 pkt. + 2 pkt. za znalezienie niereprodukowalnego i zidentyfikowanie przyczyny). Wyniki przesłać w formie raportu (pull request do folderu PD). Polecam napisanie raportu w języku angielskim, będzie to pomocne, gdyż projekt będzie artykułem naukowym w języku angielskim.
 
@@ -91,9 +92,52 @@ Journale do wyboru. Mozna wziąć artykuły z jednego lub kilku.
 - [Journal of Statistical Software](https://www.jstatsoft.org/article/view/v083i11)
 
 ### Praca Domowa II (3 pkt.)
-Założenie podrozdziału odpowiadającego artykułowi, który powstanie w ramach projektu. Wybrać deskryptywny tytuł artykułu.
+Termin: 7.04.2020
+Oddanie pracy domowej: cała grupa
+
+Mamy już repozytorium z [ebookiem](https://github.com/mini-pw/2020L-WB-Book), w którym będziemy umieszczać artykuły. 
+
+W tym tygodniu zadaniem jest założenie podrozdziału odpowiadającego artykułowi, który powstanie w ramach projektu. 
+Zależy mi, żeby podrozdział zawierał deskryptywny tytuł artykułu, odpowiadający temu, o czym chcielibyście napisać. Jeśli w trakcie wykonywania projektu zmieni się koncepcja, to tytuł oczywiście można potem zmienić.
+
+
+#### Instrukcja jak pracować z naszym ebookiem? :)
+
+Książka utworzona jest pakietem R `bookdown` i tym też pakietem można zbudować książkę. 
+W tym celu trzeba:
+
+1) Zrobić fork tego repozytorium https://github.com/mini-pw/2020L-WB-Book i go sklonować.
+
+2) Zainstalować zależności
+
+```
+devtools::install_dev_deps()
+```
+
+3) Wyrenderować książkę do HTML
+```
+bookdown::render_book('./', 'bookdown::gitbook')
+```
+Pliki z książką znajdują się w folderze docs, żeby ją podejrzeć można otworzyć plik `docs/index.html`
+
+
+Jak dodać swój rozdział?
+
+Książka będzie służyć do artykułów wszystkich grup robiących Warsztaty Badawcze I i Warsztaty Badawcze II. Z tego powodu podzielona jest na 3 rozdziały, pierwszy z nich odpowiada naszym projketom o reprodukowalności.
+
+- Pliki zaczynające się od 1-0, 2-0, 3-0 to wstępy do rozdziałów, które uzupełnię ja i pozostałe prowadzące.
+
+- Pliki zaczynające się od 1-1. 1-2, 1-3, ... to podrozdziały, które powinny odpowiadać grupom. Przykładowy plik to `1-1-example-article.Rmd`. Na jego podstawie stwórzcie, proszę Wasze pliki z podrozdziałami. Taki plik powinien zawierać co najmniej tytuł i autorów. Mile widziany jest też szkielet artykułu, czyli nagłówki (mogą być identyczne jak w pliku z przykładem). Sam artykuł polecam pisać w czystym Markdownie, nie trzeba używać żadnych komend z R.
+|
+- Istotne jest, że najwyższy stopień nagłówka w plikach z artykułami to ##, dzięki temu będą one podrozdziałami dla pliku `1-0-reproducibility.Rmd` gdzie jest nagłówek wyżej, czyli z jednym #. Przy pull requestach, proszę, pilnujcie zagnieżdżeń tych nagłówków, żeby nam się struktura nie rozjechała :).
+
+- Robiąc pull request z pracą domową zacznijcie jego nazwę od REPR. Dzięki temu łatwiej mi będzie wyłapywać PR dotyczce naszego projektu.
+
+
 
 ### Praca Domowa III (5 pkt.)
+Termin: 21.04.2020
+
 Napisać Related Work artykułów dotyczących reprodukowalności.
 Umieścić Related Work w książce w odpowiednim artykule.
 
