@@ -1,0 +1,716 @@
+---
+title: "Praca domowa nr 1"
+author: "Wojciech Szczypek"
+date: "29 03 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=8, fig.height=5) 
+```
+
+
+# Artykuł nr 1
+## fclust: An R Package for Fuzzy Clustering
+https://journal.r-project.org/archive/2019/RJ-2019-017/RJ-2019-017.pdf
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+library(fclust)
+library(cluster)
+library(ggplot2)
+library(likert)
+library(smacof)
+require(gridExtra)
+require(grid)
+multiple_ggplot_sharedLegend <- function(..., ncol = length(list(...)), nrow  = 1, position = c("bottom", "right"))
+{
+  grid_arrange_shared_legend(..., ncol = ncol, nrow = nrow, position = position)
+}
+
+grid_arrange_shared_legend <- function(..., ncol = length(list(...)), nrow = 1, position = c("bottom", "right")) 
+{
+  plots <- list(...)
+  position <- match.arg(position)
+  g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
+  legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+  lheight <- sum(legend$height)
+  lwidth <- sum(legend$width)
+  gl <- lapply(plots, function(x) x + theme(legend.position="none"))
+  gl <- c(gl, ncol = ncol, nrow = nrow)
+  combined <- arrangeGrob(do.call(arrangeGrob, gl),
+                          legend,
+                          ncol = ifelse(position == "bottom", 1, 2), 
+                          heights = unit.c(unit(1, "npc") - lheight, lheight))
+  grid.newpage()
+  cobined <- grid.draw(combined)
+  return(combined)
+}
+```
+
+
+### Figure 1
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+data("butterfly",  package = "fclust")
+butterfly <- butterfly[-c(1,17),]
+rownames(butterfly) <- as.character(rep(1:nrow(butterfly)))
+plot(butterfly, type = "n", xlab = "Var. 1", ylab="Var. 2")
+text(butterfly[,1], butterfly[,2], labels = rownames(butterfly), cex = 0.7, lwd = 2)
+```
+
+### Figure 2
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+data("NBA")
+X.NBA <- NBA[,c(4,7,10,11,12,13,14,15,16,17,20)]
+fkm.NBA <-  FKM(X = X.NBA, m = 1.2, RS = 50, stand = 1, index = "SIL.F")
+plot(fkm.NBA, pca = TRUE)
+```
+
+
+### Figure 3
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+data(synt.data2)
+plot(synt.data2)
+```
+
+
+### Figure 4
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+data("houseVotes")
+level.drop <- droplevels(houseVotes,exclude = "yn")
+houseVotesComplete <- level.drop[complete.cases(level.drop),]
+X.houseVotesComplete <- houseVotesComplete[,-1]
+D.houseVotes <- daisy(x = X.houseVotesComplete, metric = "gower")
+nefrc.houseVotes <- NEFRC(D = D.houseVotes, k = 2, m = 1.5, index = "SIL.F")
+plot(nefrc.houseVotes, pca = TRUE)
+```
+
+### Figure 5
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+plots <- vector("list", length = 16)
+tab <- data.frame(votes = X.houseVotesComplete$`handicapped-infants`, cluster = factor(nefrc.houseVotes$clus[,1], labels = c("Clus 1", "Clus 2")))
+lab <- seq(1,16,4)
+for(i in 1:16)
+{
+  tab$votes <- X.houseVotesComplete[[i]]
+  colnames(X.houseVotesComplete) = c("handicapped-infants", "water-project-cost", "adoption-of-the-budget",  "physician-fee-freeze",
+                                     "el-salvador-aid", "religious-groups", "anti-satellite-test-ban", "aid-to-nicaraguan",         
+                                     "mx-missile", "immigration", "synfuels-corporation", "education-spending",                
+                                     "superfund-right", "crime", "duty-free-exports", "export-administration")
+  if(i == 13)
+  {
+    plots[[i]] <- ggplot(tab, aes(x = cluster , fill = votes)) + scale_fill_manual(values = c("green", "blue")) + geom_bar(position = "fill") + theme_classic() + 
+                         ggtitle(names(X.houseVotesComplete)[i]) + ylab(" ") + xlab(" ") + theme(legend.title = element_blank(), plot.title = element_text(size=8))   
+  }else if(any(i == lab))
+  {
+    plots[[i]] <- ggplot(tab, aes(x = cluster , fill = votes)) + scale_fill_manual(values = c("green", "blue")) + geom_bar(position = "fill") + theme_classic() + 
+                         ggtitle(names(X.houseVotesComplete)[i]) + ylab(" ") + xlab(" ") + theme(axis.title.x = element_blank(), legend.title = element_blank(),
+                         plot.title = element_text(size=8))                                                                                                                                                                      
+  }else if(any(i == 14:16))
+  {
+    plots[[i]] <- ggplot(tab, aes(x = cluster , fill = votes)) + scale_fill_manual(values = c("green", "blue")) + geom_bar(position = "fill") + theme_classic() + 
+                         ggtitle(names(X.houseVotesComplete)[i]) + ylab(" ") + xlab(" ") + theme(axis.title.y = element_blank(), legend.title = element_blank(),
+                         plot.title = element_text(size=8))
+  }else{
+    plots[[i]] <- ggplot(tab, aes(x = cluster , fill = votes)) + scale_fill_manual(values = c("green", "blue")) + geom_bar(position = "fill") + theme_classic() + 
+                         ggtitle(names(X.houseVotesComplete)[i]) + ylab(" ") + xlab(" ") + theme(axis.title.x = element_blank(), axis.title.y = element_blank(),
+                         legend.title = element_blank(), plot.title = element_text(size = 8))                                                                                                                                                                      
+  }
+}
+multiplePlots <- multiple_ggplot_sharedLegend(plots[[1]],  plots[[2]],  plots[[3]],  plots[[4]],  plots[[5]],  plots[[6]],
+                                              plots[[7]],  plots[[8]],  plots[[9]],  plots[[10]], plots[[11]], plots[[12]],
+                                              plots[[13]], plots[[14]], plots[[15]], plots[[16]], ncol = 4, nrow = 4)
+
+```
+
+### Conclusion
+
+I managed to reproduce all of the plots and tables, which were mentioned in the article without any troubles. The only thing, that surprised me was the fact, that i had outdated version of R, thus i couldn't install some of the required packages. However, after updating R to the newest version everything went well. Thus, we can call this article reproducable, even if it comes to the strictest definition in the sense of detail.
+
+
+# Article nr 2
+## Time-Series Clustering in R Using the dtwclust Package
+https://journal.r-project.org/archive/2019/RJ-2019-023/RJ-2019-023.pdf
+
+### Figure 1
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+library("dtwclust")
+dtw_example <- dtw(CharTraj[[1L]], CharTraj[[2L]], keep.internals = TRUE)
+plot(dtw_example, type = "two",
+     offset = 1, match.indices = 30,
+     match.col = "blue",
+     xlab = "Time", ylab = "Series")
+```
+
+
+### Figure 2
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+
+plot(symmetric1)
+plot(symmetric2)
+
+```
+
+### Figure 3
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+dtwWindow.plot(sakoeChibaWindow, window.size = 2, reference = 10, query = 10)
+```
+
+### Figure 4
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+envelopes <- compute_envelope(CharTraj[[2L]], window.size = 15)
+matplot(cbind(envelopes$lower, envelopes$upper),
+        type = "l", lty = 2, col = 2:3,
+        xlab = "Time", ylab = "Series")
+lines(CharTraj[[2L]])
+```
+
+### Figure 5
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+require("TSclust")
+## ----benchmarks-against-other-packages-----------------------------------
+library(dplyr)
+library(TSdist)
+library(microbenchmark)
+library(ggplot2)
+
+ggplot2::theme_set(ggplot2::theme_bw())
+ggplot2::theme_update(legend.position = "bottom")
+
+#' The dataset has series with different lengths. This threshold specifies the difference there
+#' should be between series in the subset that is taken.
+length_diff_threshold <- 20L
+
+# Take only two samples of each character
+series <- lapply(seq(from = 1L, to = 100L, by = 5L), function(i) { CharTraj[i:(i + 1L)] })
+# Get length of each character's time series
+len <- sapply(series, function(s) { lengths(s)[1L] })
+# Sort lengths
+id_ascending <- sort(len, decreasing = FALSE, index.return = TRUE)
+
+# Identify those characters that have length differences greater than the threshold specified
+len <- id_ascending$x
+id_ascending <- id_ascending$ix
+dlen <- diff(len) < length_diff_threshold
+while (any(dlen)) {
+    rem <- which(dlen)[1L] + 1L
+    len <- len[-rem]
+    id_ascending <- id_ascending[-rem]
+    dlen <- diff(len) < length_diff_threshold
+}
+
+# Get the resulting characters
+series <- series[id_ascending]
+
+# Also get the multivariate versions
+series_mv <- lapply(seq(from = 1L, to = 100L, by = 5L), function(i) { CharTrajMV[i:(i + 1L)] })
+series_mv <- series_mv[id_ascending]
+
+# Window sizes for the experiments
+window_sizes <- seq(from = 10L, to = 50L, by = 10L)
+# Number of times each experiment will be repeated (by microbenchmark)
+times <- 100L
+
+## ----lbk-single----------------------------------------------------------
+lbk_single <- with(
+    new.env(),
+    {
+        # Loop along extracted subsets
+        benchmarks <- lapply(series, function(this_series) {
+            # Build expressions to evaluate, substituting window size
+            expressions <- lapply(window_sizes, function(window.size) {
+                bquote(
+                    lb_keogh(x, y, .(window.size), norm = "L2", error.check = FALSE)
+                )
+            })
+
+            # Extract sample series
+            x <- this_series[[1L]]
+            y <- this_series[[2L]]
+
+            # Evaluate expressions
+            benchmark <- summary(microbenchmark(list = expressions, times = times, unit = "us"))
+
+            # Return data frame with results
+            data.frame(distance = "LB Keogh (dtwclust)",
+                       series_length = NROW(x),
+                       window_size = window_sizes,
+                       median_time_us = benchmark$median,
+                       stringsAsFactors = FALSE)
+        })
+
+        # Bind results for all series and return to global environment
+        dplyr::bind_rows(benchmarks)
+    }
+)
+
+lbk_tsdist_single <- with(
+    new.env(),
+    {
+        # Loop along extracted subsets
+        benchmarks <- lapply(series, function(this_series) {
+            # Build expressions to evaluate, substituting window size
+            expressions <- lapply(window_sizes, function(window.size) {
+                bquote(
+                    LBKeoghDistance(y, x, .(window.size * 2L + 1L))
+                )
+            })
+
+            # Extract sample series
+            x <- this_series[[1L]]
+            y <- this_series[[2L]]
+
+            # Evaluate expressions
+            benchmark <- summary(microbenchmark(list = expressions, times = times, unit = "us"))
+
+            # Return data frame with results
+            data.frame(distance = "LB Keogh (TSdist)",
+                       series_length = NROW(x),
+                       window_size = window_sizes,
+                       median_time_us = benchmark$median,
+                       stringsAsFactors = FALSE)
+        })
+
+        # Bind results for all series and return to global environment
+        dplyr::bind_rows(benchmarks)
+    }
+)
+
+lbk_comparison <- dplyr::bind_rows(lbk_single, lbk_tsdist_single)
+lbk_comparison <- dplyr::mutate_if(lbk_comparison, ~ is.character(.) | is.integer(.), as.factor)
+
+ggplot(lbk_comparison,
+       aes(x = series_length,
+           y = median_time_us,
+           group = window_size,
+           colour = window_size)) +
+    geom_point() +
+    geom_line() +
+    facet_wrap(~distance, scales = "free_y") +
+    scale_color_discrete(name = "Window size") +
+    labs(x = "Series' length", y = expression("Median time ("*mu*"s)"))
+```
+
+### Figure 6
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+dtw_basic_single <- with(
+    new.env(),
+    {
+        # Loop along extracted subsets
+        benchmarks <- lapply(series, function(this_series) {
+            # Build expressions to evaluate, substituting window size
+            expressions <- lapply(window_sizes, function(window.size) {
+                bquote(
+                    dtw_basic(x, y, .(window.size), norm = "L2")
+                )
+            })
+
+            # Extract sample series
+            x <- this_series[[1L]]
+            y <- this_series[[2L]]
+
+            # Evaluate expressions
+            benchmark <- summary(microbenchmark(list = expressions, times = times, unit = "us"))
+
+            # Return data frame with results
+            data.frame(distance = "dtw_basic (dtwclust)",
+                       series_length = NROW(x),
+                       window_size = window_sizes,
+                       median_time_us = benchmark$median,
+                       stringsAsFactors = FALSE)
+        })
+
+        # Bind results for all series and return to global environment
+        dplyr::bind_rows(benchmarks)
+    }
+)
+
+dtw_single <- with(
+    new.env(),
+    {
+        # Loop along extracted subsets
+        benchmarks <- lapply(series, function(this_series) {
+            # Build expressions to evaluate, substituting window size
+            expressions <- lapply(window_sizes, function(window.size) {
+                bquote(
+                    dtw::dtw(x, y, window.type = "slantedband", window.size = .(window.size), distance.only = TRUE)
+                )
+            })
+
+            # Extract sample series
+            x <- this_series[[1L]]
+            y <- this_series[[2L]]
+
+            # Evaluate expressions
+            benchmark <- summary(microbenchmark(list = expressions, times = times, unit = "us"))
+
+            # Return data frame with results
+            data.frame(distance = "dtw (dtw)",
+                       series_length = NROW(x),
+                       window_size = window_sizes,
+                       median_time_us = benchmark$median,
+                       stringsAsFactors = FALSE)
+        })
+
+        # Bind results for all series and return to global environment
+        dplyr::bind_rows(benchmarks)
+    }
+)
+
+dtw_comparison <- dplyr::bind_rows(dtw_basic_single, dtw_single)
+dtw_comparison <- dplyr::mutate_if(dtw_comparison, ~ is.character(.) | is.integer(.), as.factor)
+
+ggplot(dtw_comparison,
+       aes(x = series_length,
+           y = median_time_us,
+           group = window_size,
+           colour = window_size)) +
+    geom_point() +
+    geom_line() +
+    facet_wrap(~distance, scales = "free_y") +
+    scale_color_discrete(name = "Window size") +
+    labs(x = "Series' length", y = expression("Median time ("*mu*"s)"))
+```
+
+### Figure 7
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+RcppParallel::setThreadOptions(1L)
+series <- reinterpolate(CharTraj, 100L)
+window_size <- 30L
+id_series <- cbind(c(seq(from = 10L, to = 40L, by = 10L),
+                     rep(50L, 6L)),
+                   seq(from = 10L, to = 100L, by = 10L))
+
+lbk_multiple <- {
+    # Build expressions for proxy::dist
+    expressions <- lapply(1L:nrow(id_series), function(i) {
+        bquote(
+            proxy::dist(x = series[1L:.(id_series[i, 1L])],
+                        y = series[1L:.(id_series[i, 2L])],
+                        method = "lbk",
+                        norm = "L2",
+                        window.size = .(window_size),
+                        error.check = FALSE)
+        )
+    })
+
+    # Evaluate expressions
+    benchmark <- summary(microbenchmark(list = expressions, times = 30L, unit = "ms"))
+
+    # Return data frame with results
+    data.frame(distance = "LB Keogh (dtwclust)",
+               num_x = id_series[,1L],
+               num_y = id_series[,2L],
+               num_total = id_series[,1L] * id_series[,2L],
+               series_length = NROW(series[[1L]]),
+               window_size = window_size,
+               median_time_ms = benchmark$median,
+               stringsAsFactors = FALSE)
+}
+
+lbk_tsdist_multiple <- {
+    # Build expressions for proxy::dist
+    expressions <- lapply(1L:nrow(id_series), function(i) {
+        # x and y inverted because the TSdist version calculates envelops for x
+        bquote(
+            proxy::dist(y = series[1L:.(id_series[i, 1L])],
+                        x = series[1L:.(id_series[i, 2L])],
+                        method = "TSDistances",
+                        distance = "lb.keogh",
+                        window.size = .(window_size * 2L + 1L))
+        )
+    })
+
+    # Evaluate expressions
+    benchmark <- summary(microbenchmark(list = expressions, times = 3L, unit = "ms"))
+
+    # Return data frame with results
+    data.frame(distance = "LB Keogh (TSdist)",
+               num_x = id_series[,1L],
+               num_y = id_series[,2L],
+               num_total = id_series[,1L] * id_series[,2L],
+               series_length = NROW(series[[1L]]),
+               window_size = window_size,
+               median_time_ms = benchmark$median,
+               stringsAsFactors = FALSE)
+}
+
+lbk_comparison <- dplyr::bind_rows(lbk_multiple, lbk_tsdist_multiple)
+lbk_comparison$vbreaks <- 2500L
+
+ggplot(lbk_comparison,
+       aes(x = num_total,
+           y = median_time_ms,
+           colour = num_y)) +
+    geom_point(size = 3) +
+    geom_line() +
+    geom_vline(aes(xintercept = vbreaks), colour = "black", linetype = "longdash") +
+    facet_wrap(~ distance, scales = "free_y") +
+    scale_color_continuous(name = "Amount of warping envelopes needed") +
+    labs(x = "Total number of distance calculations", y = "Median time (ms)")
+
+```
+
+### Figure 8
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+series <- CharTraj
+id_series <- matrix(rep(seq(from = 10L, to = 50L, by = 10L), 2L), ncol = 2L)
+
+dtw_basic_multiple <- {
+    # Build expressions for proxy::dist
+    expressions <- lapply(1L:nrow(id_series), function(i) {
+        bquote(
+            proxy::dist(x = series[1L:.(id_series[i, 1L])],
+                        y = series[1L:.(id_series[i, 2L])],
+                        method = "dtw_basic",
+                        norm = "L2",
+                        window.size = .(window_size))
+        )
+    })
+
+    # Evaluate expressions
+    benchmark <- summary(microbenchmark(list = expressions, times = 10L, unit = "s"))
+
+    # Return data frame with results
+    data.frame(distance = "dtw_basic (dtwclust)",
+               num_total = id_series[,1L] * id_series[,2L],
+               series_length = NROW(series[[1L]]),
+               window_size = window_size,
+               median_time_s = benchmark$median,
+               stringsAsFactors = FALSE)
+}
+
+dtw_multiple <- {
+    # Build expressions for proxy::dist
+    expressions <- lapply(1L:nrow(id_series), function(i) {
+        bquote(
+            proxy::dist(y = series[1L:.(id_series[i, 1L])],
+                        x = series[1L:.(id_series[i, 2L])],
+                        method = "dtw",
+                        window.type = "slantedband",
+                        window.size = .(window_size))
+        )
+    })
+
+    # Evaluate expressions
+    benchmark <- summary(microbenchmark(list = expressions, times = 10L, unit = "s"))
+
+    # Return data frame with results
+    data.frame(distance = "dtw (dtw)",
+               num_total = id_series[,1L] * id_series[,2L],
+               series_length = NROW(series[[1L]]),
+               window_size = window_size,
+               median_time_s = benchmark$median,
+               stringsAsFactors = FALSE)
+}
+
+dtw_comparison <- dplyr::bind_rows(dtw_basic_multiple, dtw_multiple)
+
+ggplot(dtw_comparison,
+       aes(x = num_total,
+           y = median_time_s)) +
+    geom_point(size = 3) +
+    geom_line() +
+    facet_wrap(~ distance, scales = "free_y") +
+    labs(x = "Total number of distance calculations", y = "Median time (s)")
+
+RcppParallel::setThreadOptions()
+```
+
+### Figure 9
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+series <- CharTraj
+id_series <- matrix(rep(seq(from = 10L, to = 50L, by = 10L), 2L), ncol = 2L)
+
+dtw_basic_multiple <- {
+    # Build expressions for proxy::dist
+    expressions <- lapply(1L:nrow(id_series), function(i) {
+        bquote(
+            proxy::dist(x = series[1L:.(id_series[i, 1L])],
+                        y = series[1L:.(id_series[i, 2L])],
+                        method = "dtw_basic",
+                        norm = "L2",
+                        window.size = .(window_size))
+        )
+    })
+
+    # Evaluate expressions
+    benchmark <- summary(microbenchmark(list = expressions, times = 10L, unit = "s"))
+
+    # Return data frame with results
+    data.frame(distance = "dtw_basic (dtwclust)",
+               num_total = id_series[,1L] * id_series[,2L],
+               series_length = NROW(series[[1L]]),
+               window_size = window_size,
+               median_time_s = benchmark$median,
+               stringsAsFactors = FALSE)
+}
+
+dtw_multiple <- {
+    # Build expressions for proxy::dist
+    expressions <- lapply(1L:nrow(id_series), function(i) {
+        bquote(
+            proxy::dist(y = series[1L:.(id_series[i, 1L])],
+                        x = series[1L:.(id_series[i, 2L])],
+                        method = "dtw",
+                        window.type = "slantedband",
+                        window.size = .(window_size))
+        )
+    })
+
+    # Evaluate expressions
+    benchmark <- summary(microbenchmark(list = expressions, times = 10L, unit = "s"))
+
+    # Return data frame with results
+    data.frame(distance = "dtw (dtw)",
+               num_total = id_series[,1L] * id_series[,2L],
+               series_length = NROW(series[[1L]]),
+               window_size = window_size,
+               median_time_s = benchmark$median,
+               stringsAsFactors = FALSE)
+}
+
+dtw_comparison <- dplyr::bind_rows(dtw_basic_multiple, dtw_multiple)
+
+ggplot(dtw_comparison,
+       aes(x = num_total,
+           y = median_time_s)) +
+    geom_point(size = 3) +
+    geom_line() +
+    facet_wrap(~ distance, scales = "free_y") +
+    labs(x = "Total number of distance calculations", y = "Median time (s)")
+
+RcppParallel::setThreadOptions()
+```
+
+### Conclusions
+
+It's the next example of the article which could be easily reproduced. Thanks to the supplementary material, which could be downlaoded from the R Journal it was even easier than usually. However some of the figures required more time to be drawn, thus some machines may require more time than others and reproducing may be much longer. Despite the fact, the article is by no means reproducible.
+
+
+# Article nr 3
+## Raster Images in R Graphics
+https://journal.r-project.org/archive/2011/RJ-2011-008/RJ-2011-008.pdf
+
+### Figure 1
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+ library(grid)
+grid.raster(1:10/11)
+
+```
+
+### Figure 2
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+grid.raster(matrix(colors()[1:100], ncol=10), interpolate=FALSE)
+```
+
+### Figure 3
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+grid.raster(1:10/11, interpolate=FALSE)
+ grid.raster(matrix(colors()[1:100], ncol=10))
+
+```
+
+### Figure 4?
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+# download.file("http://cran.r-project.org/Rlogo.jpg", "Rlogo.jpg")
+# library(ReadImages)
+# logo <- read.jpeg("Rlogo.jpg")
+# par(mar=rep(0, 4))
+# plot(logo)
+# grid.raster(logo)
+```
+
+### Figure 5
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+x <- y <- seq(-4*pi, 4*pi, len=27)
+r <- sqrt(outer(x^2, y^2, "+"))
+z <- cos(r^2)*exp(-r/6)
+image <- (z - min(z))/diff(range(z))
+step <- diff(x)[1]
+xrange <- range(x) + c(-step/2, step/2)
+yrange <- range(y) + c(-step/2, step/2)
+plot(x, y, ann=FALSE, xlim=xrange, ylim=yrange, xaxs="i", yaxs="i")
+rasterImage(image, xrange[1], yrange[1], xrange[2], yrange[2], interpolate=FALSE)
+
+```
+
+### Figure 6
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+x <- c(0.00, 0.40, 0.86, 0.85, 0.69, 0.48,
+0.54, 1.09, 1.11, 1.73, 2.05, 2.02)
+library(lattice)
+barchart(1:12 ~ x, origin=0, col="white",
+panel=function(x, y, ...) {
+panel.barchart(x, y, ...)
+grid.raster(logo, x=0, width=x, y=y,
+default.units="native",
+just="left",
+height=unit(2/37,
+"npc"))
+})
+
+```
+
+### Figure 7
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+barchart(1:12 ~ x, origin=0, col="white",
+panel=function(x, y, ...) {
+panel.barchart(x, y, ...)
+grid.raster(t(1:10/11), x=0,
+width=x, y=y,
+default.units="native",
+just="left",
+height=unit(2/37,
+"npc"))
+})
+
+```
+
+### Figure 8?
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE}
+# library(maps)
+# par(mar=rep(0, 4))
+# map(region="Spain", col="black", fill=TRUE)
+# mask <- grid.cap()
+# library(png)
+# espana <- readPNG("1000px-Flag_of_Spain.png")
+# espanaRaster <- as.raster(espana)
+# espanaRaster <- espanaRaster[, 1:dim(mask)[2]]
+# mask <- mask[1:dim(espanaRaster)[1], ]
+# espanaRaster[mask != "black"] <- "transparent"
+# par(mar=rep(0, 4))
+# map(region="Spain")
+# grid.raster(espanaRaster, y=1, just="top")
+# map(region="Spain", add=TRUE)
+
+
+```
+
+
+### Conclusions
+
+As we can see above, some of the figures haven't finally appeared. Both required grid pack that isn't not supported by my R version so as for now it's impossible for me to reproduce this article. Moreover on the R journal website of this article there were no supplementary materials, so reproducing all of the codes was more difficult, because I had to follow the code whcich was in the article itself. It was carelessly formated, so it was quite annoying. However if we take into account that the article is from 2010, then it's not as bad as it could be. In my opinion, this is the perfect example of the article whcich is not easily reproducable and can cause troubles to people who would like to achieve the same results as in the article.
