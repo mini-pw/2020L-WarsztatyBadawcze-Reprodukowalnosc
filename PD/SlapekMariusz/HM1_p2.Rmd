@@ -1,0 +1,384 @@
+---
+title: "WB1 - Homework 1"
+author: "Mariusz Słapek"
+date: "31/03/2020"
+output: html_document
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Introduction
+
+Reproducibility is a primary component of the scientific method. Full reproducibility means that simply reading a scientific paper should give you all the information you need to: 
+1. set up the same experiments, 
+2. follow the same approach, and then
+3. obtain similar results. 
+In this article there are two example of two package to reproduce in R.
+
+
+## corr2D
+
+Implementation of Two-Dimensional Correlation Analysis in R
+
+### Info
+
+In the package corr2D two-dimensional correlation analysis is implemented in R. The package corr2D offers the possibility to preprocess, correlate and postprocess spectroscopic data using exclusively the R language
+
+### Tests
+
+```{r warning = FALSE}
+library("corr2D")
+library("microbenchmark")
+library("profr")
+library("xtable")
+
+```
+
+#### Section 2:  Theoretical description of 2D correlation spectroscopy
+
+
+```{r warning = FALSE}
+xlab <- c(expression(paste("-2", pi)), expression(paste("-1.5", pi)), 
+          expression(paste("-1", pi)), expression(paste("-0.5", pi)), 
+          expression(paste("0")), expression(paste("0.5", pi)), 
+          expression(paste("1", pi)), expression(paste("1.5", pi)), 
+          expression(paste("2", pi)))
+Pert <- seq(-4*pi, 4*pi, 0.1)
+
+y1 <- sin(Pert)
+y2 <- sin(Pert)
+
+plot(Pert, y1, t = "l", col = 1,
+     xlab = "Perturbation t", ylab = "Function value", axes = FALSE,
+     xlim = c(-2*pi, 2*pi), ylim = c(-1.4, 1.4),
+     cex.lab = 1.2, cex.axis = 1.1)
+lines(Pert, y2, col = 1, lty = 2)
+title("Case (a)", col.main = 2, cex.main = 1.5)
+axis(1, seq(-2*pi, 2*pi, pi/2), xlab, cex = 1.1)
+axis(2, seq(-1, 1, 0.5), cex = 1.1)
+abline(h = 0, lty = 2)
+box()
+
+legend(0.8 * pi, 1.5, c(expression(paste(y[1], " = sin(t)")),
+                        expression(paste(y[2], " = sin(t)"))),
+       col = 1, pch = NA, lty = c(1, 2), bty = "n", seg.len = 1, cex = 1.1)
+
+ft1 <- fft(y1)[1:(length(y1) - 1) %/% 2 + 1]
+ft2 <- fft(y2)[1:(length(y2) - 1) %/% 2 + 1]
+
+FT1 <- ft1 %*% Conj(ft2)
+
+y1 <- sin(Pert)
+y2 <- sin(Pert + pi/2)
+
+plot(Pert, y1, t = "l", col = 1,
+     xlab = "Perturbation t", ylab = "Function value", axes = FALSE,
+     xlim = c(-2*pi, 2*pi), ylim = c(-1.4, 1.4),
+     cex.lab = 1.2, cex.axis = 1.1)
+lines(Pert, y2, col = 1, lty = 2)
+title("Case (b)", col.main = 4, cex.main = 1.5)
+axis(1, seq(-2*pi, 2*pi, pi/2), xlab)
+axis(2, seq(-1, 1, 0.5))
+abline(h = 0, lty = 2)
+box()
+
+legend(0.3 * pi, 1.5, c(expression(paste(y[1], " = sin(t)")),
+                        expression(paste(y[2], " = sin(t + ", pi ,"/2)"))),
+       col = 1, pch = NA, lty = c(1, 2), bty = "n", seg.len = 1, cex = 1.1)
+
+ft1 <- fft(y1)[1:(length(y1) - 1) %/% 2 + 1]
+ft2 <- fft(y2)[1:(length(y2) - 1) %/% 2 + 1]
+
+FT2 <- ft1 %*% Conj(ft2)
+
+## Re(FT2) is only close to but not actual 0,
+## because the correlated data uses discrete values.
+
+y1 <- sin(Pert)
+y2 <- sin(1.1 * Pert + 3 * pi/4)
+
+plot(Pert, y1, t = "l", col = 1,
+     xlab = "Perturbation t", ylab = "Function value", axes = FALSE,
+     xlim = c(-2*pi, 2*pi), ylim = c(-1.4, 1.4),
+     cex.lab = 1.2, cex.axis = 1.1)
+lines(Pert, y2, col = 1, lty = 2)
+title("Case (c)", col.main = 3, cex.main = 1.5)
+axis(1, seq(-2*pi, 2*pi, pi/2), xlab)
+axis(2, seq(-1, 1, 0.5))
+abline(h = 0, lty = 2)
+box()
+
+legend(-0.4 * pi, 1.5, c(expression(paste(y[1], " = sin(t)")),
+                         expression(paste(y[2], " = sin(1.1*t + 3*", pi, "/4)"))),
+       col = 1, pch = NA, lty = c(1, 2), bty = "n", seg.len = 1, cex = 1.1)
+
+ft1 <- fft(y1)[1:(length(y1) - 1) %/% 2 + 1]
+ft2 <- fft(y2)[1:(length(y2) - 1) %/% 2 + 1]
+
+FT3 <- ft1 %*% Conj(ft2)
+
+plot(FT1, t = "n", col = 1,
+     axes = FALSE, xlab = "", ylab = "",
+     xlim = c(-40000, 40000), ylim = c(-40000, 40000),
+     main = "Complex correlation value", xaxs = "i", yaxs = "i",
+     cex.main = 1.5)
+arrows(-40000, 0, 40000, 0, length = 0.125)
+arrows(0, -40000, 0, 40000, length = 0.125)
+points(FT1, col = 2, pch = 16, cex = 1.5)
+points(FT2, col = 4, pch = 16, cex = 1.5)
+points(FT3, col = 3, pch = 16, cex = 1.5)
+
+lines(c(Re(FT3), 0), c(Im(FT3), Im(FT3)), col = 3, lty = 2)
+lines(c(Re(FT3), Re(FT3)), c(Im(FT3), 0), col = 3, lty = 2)
+
+text(35000, -6000, "Re(x)", cex = 1.3)
+text(-8000, 38000, "Im(x)", cex = 1.3)
+text(31000, 5000, "Case (a)", col = 2, cex = 1.4)
+text(12000, -31750, "Case (b)", col = 4, cex = 1.4)
+text(-15000, -23000, "Case (c)", col = 3, cex = 1.4)
+
+dev.off()
+
+```
+
+#### Section 3: Turtorial and interpretation
+
+```{r warning=FALSE}
+## Loading example data
+## Illustrating dataset and doing simple 2D correlation
+
+data("FuranMale", package = "corr2D")
+
+FuranMale[, 1:5]
+
+twod <- corr2d(FuranMale)
+
+```
+
+```{r warning=FALSE}
+
+plot_corr2d(twod)
+
+plot(twod, Im(twod$FT))
+
+```
+
+```{r warning=FALSE}
+plot(twod, Re(twod$FT), xlim = c(1560, 1620), ylim = c(1560, 1620),
+  xlab = expression(paste("relative Wavenumber" / cm^-1)),
+  ylab = expression(paste("relative Wavenumber" / cm^-1)),
+  Contour = FALSE, N = 32, Cutout = c(-0.8 * 10^-4, 1.3 * 10^-4),
+  Legend = FALSE)
+
+
+```
+
+
+```{r warning=FALSE}
+plot_corr2din3d(Mat = Re(twod$FT), specx = twod$Ref1,
+  specy = twod$Ref1, reduce = 2, scalex = -150, scaley = -130,
+  zlim = c(-0.7, 1) * 10^-3, projection = TRUE,
+  border = NULL, theta = 25, phi = 15, add.legend = FALSE,
+  Col = colorspace::diverge_hcl(129, h = c(240, 0), c = 100,
+  l = c(20, 100), power = 0.3))
+
+```
+
+
+#### Section 4.2: Speed test of calculation
+
+```{r warning=FALSE}
+FILE <- "Speedtest-Table1.txt"
+if (!file.exists(FILE)) {
+    speed <- array(NA, c(6, 5, 3))
+    core <- c(1, 2, 4)
+    perturbation <- c(5, 10, 20, 100, 500)
+    specvar <- c(200, 400, 600, 1000, 4000, 8000)
+    
+    for (i in 1:3) {
+        for (j in 1:5) {
+            for (k in 1:6) {
+                speed[k, j, i] <- testcorr2d(specvar[k], perturbation[j], core[i], 10)
+            }
+        }
+    }
+    write.table(speed, file = FILE, col.names = FALSE, row.names = FALSE)
+}
+```
+```{r warning=FALSE}
+simdata <- sim2ddata(4000, seq(0, 10, length.out = 100))
+
+prof2d <- profr(c(speedtwod <- corr2d(simdata, Time =
+  as.numeric(rownames(simdata)), scaling = 0.5), plot_corr2d(speedtwod)),
+  interval = 0.005)
+close.screen(all.screens = TRUE)
+dev.off()
+
+profdata <- subset(prof2d, f == "corr2d" | f == "plot_corr2d" |
+  f == "apply" | f == "sapply" | f == "parallel::parCapply")
+
+tmp1 <- which(profdata[, 4] == "apply")
+tmp2 <- which(profdata[, 4] == "sapply")
+tmp3 <- which(profdata[, 4] == "parallel::parCapply")
+tmp4 <- which(profdata[, 4] == "corr2d")
+tmp5 <- which(profdata[, 4] == "plot_corr2d")
+
+tmpmat <- matrix(c(profdata[tmp4[1], 5], profdata[tmp1[1], 5],
+  profdata[tmp1[1], 5], profdata[tmp1[1], 6],
+  profdata[tmp1[1], 6], profdata[tmp2[1], 6],
+  profdata[tmp2[1], 6], profdata[tmp3[1], 5],
+  profdata[tmp3[1], 5], profdata[tmp3[1], 6],
+  profdata[tmp3[1], 6], profdata[tmp4[1], 6],
+  profdata[tmp5[1], 5], profdata[tmp5[1], 6]), 7, 2, byrow = TRUE)
+
+time2d <- tmpmat[, 2] - tmpmat[, 1]
+
+proftime <- cbind(c(time2d[1], 0, 0, time2d[4:6], 0),
+  c(time2d[1:6], 0), time2d)
+
+rownames(proftime) <- c("makeCluster", "Interpolation", "Reference",
+  "FFT", "Correlation", "Saving", "Plot")
+colnames(proftime) <- c("w/o", "w/", "Plot")
+
+
+bp <- barplot(proftime, horiz = TRUE,
+  names.arg = c("Corr. w/o interpol. \n or ref. calc",
+    "Corr. w/ interpol. \n and ref. calc", "Corr. and plot"),
+  col = colorspace::heat_hcl(8, c(0, 300), c(100, 100), c(60, 30), c(1, 1))[1:7],
+  xlim = c(0, 1.2 * tmpmat[7, 2]), xlab = "Calculation time / s")
+
+text(tmpmat[6, 2] + tmpmat[1, 2] - tmpmat[3, 2], bp[1],
+     paste(round(tmpmat[6, 2] + tmpmat[1, 2] - tmpmat[3, 2], 1), "s"), pos = 4)
+text(tmpmat[6, 2], bp[2], paste(round(tmpmat[6, 2], 1), "s"), pos = 4)
+text(tmpmat[7, 2], bp[3], paste(round(tmpmat[7, 2], 1), "s"), pos = 4)
+
+box()
+
+legend(0.8 * tmpmat[7, 2], bp[1] + 1, rownames(proftime),
+       col = colorspace::heat_hcl(8, c(0, 300), c(100, 100), c(60, 30), c(1, 1))[1:7], pch = 15, cex = 1.2)
+
+```
+
+```{r warning=FALSE}
+shigedata <- c(79, 78, 78, 77, 78, 78, 78, 77, 78, 78)
+
+bp <- barplot(cbind(c(time2d, 0), c(rep(0, 7), mean(shigedata))), horiz = TRUE,
+  names.arg = c("corr2D", "2DShige"),
+  col = colorspace::heat_hcl(8, c(0, 270), c(100, 100), c(60, 30), c(1, 1)),
+  xlim = c(0, 1.2 * mean(shigedata)), xlab = "Calculation time / s")
+
+text(tmpmat[7, 2], bp[1], paste(round(tmpmat[7, 2], 1), "s"), pos = 4)
+text(mean(shigedata), bp[2], paste(round(mean(shigedata), 1), "s"), pos = 4)
+
+box()
+
+legend(0.8 * mean(shigedata), (bp[1] + bp[2]) / 2 - 0.1, rownames(proftime),
+  col = colorspace::heat_hcl(8, c(0, 300), c(100, 100), c(60, 30), c(1, 1))[1:7], pch = 15, cex = 1.2)
+
+
+```
+
+## epinet: An R Package to Analyze Epidemics Spread across Contact Networks
+
+
+### Info
+
+The R package *epinet* provides tools for analyzing the spread of epidemics through populations. We assume that the relationships among individuals in a population are modeled by a contact network described by an exponential-family random graph model and that the disease being studied spreads across the edges of this network from infectious to susceptible individuals.
+
+### Tests
+
+The code is attached to the article. Every part (apart from the code which may take several hours to run) is concerning other test shown in the article.
+
+
+#### Simulated Example
+
+```{r warning = FALSE}
+# Load package
+library("epinet")
+
+
+N <- 50
+mycov <- data.frame(id = 1:N, xpos = runif(N), ypos = runif(N))
+dyadCov <- BuildX(mycov, binaryCol = list(c(2, 3)), binaryFunc = "euclidean")
+
+# Build network
+eta <- c(0, -7)
+net <- SimulateDyadicLinearERGM(N = N, dyadiccovmat = dyadCov, eta = eta)
+
+
+# Simulate epidemic
+epi <- SEIR.simulator(M = net, N = N, beta = 1, ki = 3, thetai = 7, ke = 3, latencydist = "gamma")
+# Plot epidemic
+plot(epi, e.col = "slategrey", i.col = "red")
+
+```
+
+```{r}
+# Run MCMC routine on simulated epidemic
+mcmcinput <- MCMCcontrol(nsamp = 1000000, thinning = 100, etapropsd = c(1, 1))
+priors <- priorcontrol(bprior = c(0, 4), tiprior = c(1, 15), teprior = c(1, 15), etaprior = c(0, 10, 0, 10), kiprior = c(1, 7), keprior = c(1, 7), priordists = "uniform")
+out <- epinet(~ xpos.ypos.L2Dist, epidata = epi, dyadiccovmat = dyadCov, mcmcinput = mcmcinput, priors = priors)
+
+# Produce histograms for posterior distributions of network parameters
+hist(out$eta[, 1], main = "", xlab = "Baseline log odds", cex.axis = 1.3, cex.lab = 1.3)
+abline(v = sort(out$eta[, 1])[length(out$eta[, 1]) * 0.025], col = 2)
+abline(v = sort(out$eta[, 1])[length(out$eta[, 1]) * 0.975], col = 2)
+ 
+hist(out$eta[, 2], main = "", xlab = "Incremental log odds for distance", cex.axis = 1.3, cex.lab = 1.3)
+abline(v = sort(out$eta[, 2])[length(out$eta[, 2]) * 0.025], col = 2)
+abline(v = sort(out$eta[, 2])[length(out$eta[, 2]) * 0.975], col = 2)
+
+```
+
+
+
+
+#### Hagelloch Example
+
+
+```{r warning = FALSE}
+
+library("ggplot2")
+load("SuppPlotData.RData")
+indivdata$Classroom <- factor(indivdata$Classroom, 2:0)
+cbPalette <- c("#56B4E9", "#E69F00", "#999999")
+dataplot <- ggplot(indivdata, aes(Itime - min(Itime))) +
+    geom_histogram(aes(fill = Classroom), binwidth = 1) +
+    scale_x_continuous(name = "Time (in days)") +
+    scale_y_continuous(name = "Number of newly infectious individuals",
+                       limits = c(0, 21), expand = c(0, 0)) +
+    scale_fill_manual(values = cbPalette, breaks = c("0", "1", "2"),
+                      labels = c("none", "   1", "   2")) + theme_bw() +
+    theme(axis.text = element_text(size = 14),
+          axis.title = element_text(size = 16)) +
+    theme(legend.title = element_text(size = 14, face = "bold")) +
+    theme(legend.text = element_text(size = 14))
+dataplot
+
+```
+
+
+
+```{r warning = FALSE}
+
+# Produce Hagelloch spatial plot
+
+plot(spatdata$X, spatdata$Y,
+     xlab = "X Coordinate (in meters)", ylab = "Y Coordinate (in meters)",
+     cex.lab = 1.4, cex.axis = 1.5, pch = 19,
+     xlim = c(0, 300), ylim = c(0, 250), cex = spatdata$Num/2.5)
+
+```
+
+## Conclusions
+
+I managed to reproduced all of the codes, plots and table, which were mentioned in the articles. 
+
+## Bibliography
+
+1. Robert Geitner, Robby Fritzsch, Jürgen Popp, Thomas W. Bocklitz, *corr2D: Implementation of Two-Dimensional Correlation Analysis in R*, https://www.jstatsoft.org/article/view/v090i03
+2. Chris Groendyke, David Welch, *epinet: An R Package to Analyze Epidemics Spread across Contact Networks* https://www.jstatsoft.org/article/view/v083i11
+
