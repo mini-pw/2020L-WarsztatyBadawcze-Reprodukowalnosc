@@ -1,0 +1,151 @@
+---
+title: "Reproducibility R news"
+author: "Mikołaj Malec"
+date: "3/30/2020"
+output: html_document
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Reproducibility of R news (7/3 2007) articles:
+
+sorce: https://www.r-project.org/doc/Rnews/Rnews_2007-3.pdf
+
+## SpherWave: An R Package for Analyzing Scattered Spherical Data by Spherical Wavelets
+
+```{r}
+try( library("SpherWave"))
+```
+
+There is no posibility to download SherWave. It's not updated since 2017, so it's not working on R version 3.6.1. In the end this article is unreproducible.
+
+Sorce of SherWave: https://rdrr.io/cran/SpherWave/man/
+
+## Diving Behaviour Analysis in R
+
+The diveMove package provides tools for analyzing diving behaviour, including convenient methods for the visualization of the typically large amounts of data collected by TDRs.
+
+```{r}
+library("diveMove")
+```
+
+It's possible that there was a small change in .scv file. Now it's seperated by ";".
+
+```{r}
+ff <- system.file(file.path("data",
+                            "dives.csv"), package = "diveMove")
+tdrXcsv <- read.csv(ff,sep = ";") #change from (sep = ";")
+```
+
+No problems with code below.
+
+```{r}
+
+ddtt.str <- paste(tdrXcsv$date,
+                  tdrXcsv$time)
+ddtt <- strptime(ddtt.str,
+                 format = "%d/%m/%Y %H:%M:%S")
+time.posixct <- as.POSIXct(ddtt,
+                           tz = "GMT")
+
+tdrX <- createTDR(time = time.posixct, 
+                  depth = tdrXcsv$depth,
+                  concurrentData = tdrXcsv[,-c(1:3)], 
+                  dtime = 5, 
+                  file = ff)
+
+tdrX <- createTDR(time = time.posixct,
+                     depth = tdrXcsv$depth,
+                     concurrentData = tdrXcsv[,-c(1:3)], 
+                     dtime = 5, 
+                     file = ff,
+                  speed = TRUE) 
+```
+
+*readTDR* has the same problem as above chank. Function *plotTDR* has drasticli changed. It doesn't show speed and it plots data in diffrent way (not by giving TDR object, but by giving time and depth vector). I couldn't make this plot interactiv.
+
+```{r}
+#orginal code (not working)
+#tdrX <- readTDR(ff, speed = TRUE)
+#plotTDR(tdrX)
+#fixed code
+tdrX <- readTDR(ff, sep = ";", speed = TRUE)
+plotTDR( getTime( tdrX), getDepth( tdrX), interact=FALSE)
+```
+
+*calibrateDepth* in example is not working becouse of some iner-funcion computacion. Example shown in the R Documentation is working.
+
+```{r}
+#orginal code (not working)
+#calib <- calibrateDepth(tdrX)
+#dcalib <- calibrateDepth(tdrX, offset = 3)
+#dcalib <- calibrateDepth(tdrX, offset = 3, wet.thr = 70, dry.thr = 3610, dive.thr = 4, descent.crit.q = 0.1, ascent.crit.q = 0.1, wiggle.tol = 0.8)
+
+#fixed code
+dcalib <- calibrateDepth(tdrX, dive.thr=3, zoc.method="offset",
+                          offset=3, descent.crit.q=0.01, ascent.crit.q=0,
+                          knot.factor=20)
+```
+
+Unkown error, it's posible that it is not reproducibile. 
+
+```{r}
+try({
+#orginal (not working)
+plotTDR(dcalib, concurVars = "light",
+        concurVarTitles = c("speed (m/s)","light"),
+        surface = TRUE)
+})
+```
+
+Differnt color but mosly the same plot as orginal. Also small change in semantics and no speed plot.
+
+```{r}
+#plotTDR(dcalib, diveNo = 2:8, labels = "dive.phase")
+plotTDR(dcalib, diveNo=2:8, what="phases", interact=FALSE)
+```
+
+*calibrateSpeed* is working.
+
+```{r}
+vcalib <- calibrateSpeed(dcalib,
+                         tau = 0.1, contour.level = 0.1,
+                         z = 1, bad = c(0, 0),
+                         cex.pts = 0.2)
+```
+
+Sumary:
+Alticle was made in December of 2007. Since then there were possible many changes to *diveMove* packkage and in one point lost beeing backward compatible. Maby code used in this aricle is out-off date (so unreproducible today), but it's still usefull sorce of information about *diveMove* packkage.
+
+## Very Large Numbers in R: Introducing Package Brobdingnag
+
+The Brobdingnag package allows representation and manipulation of numbers larger than those covered by standard double precision arithmetic, al- though accuracy is eroded for very large numbers. This facility is useful in several contexts, including combinatorial computations such as encountered in theoretical modelling of biodiversity.
+
+```{r}
+library( Brobdingnag)
+
+googol <- as.brob(10)^100
+googol
+```
+
+```{r}
+stirling <- function(n) { n^n * exp(-n) * sqrt(2 * pi * n) }
+stirling(googol)
+```
+
+```{r}
+2^(1/googol)
+```
+
+```{r}
+#should be zero
+f <- function(x){
+  as.numeric( (pi*x -3*x -(pi-3)*x)/x)
+}
+
+print( c(f(1/7), f(as.brob(1/7)), f(1e+100), f(as.brob(1e+100)), f(as.brob(10)^1000)))
+```
+
+All computations are equal to those in article. Or base code wasn't cahnged since 2007 or its authors of this package are very good in backward compatiblity
