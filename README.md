@@ -157,7 +157,7 @@ Te sekcje powinna zawierać co najmniej:
 
 - Opis kilku prac dotyczących reprodukowalności (po 1-3 zdania na każdą pracę), przykładowe artykuły, które można cytować są w prezentacji wymienionej wyżej i w README przedmiotu. Gorąco zachęcam do własnych poszukiwań, na przykład wpisując słowa kluczowe w [Google Scholar](https://scholar.google.com/) lub [arXiv](https://arxiv.org/). Dobrą kopalnią źródeł jest też przeglądanie, jakie inne prace cytują autorzy artykułów o reprodukowalności. 
 
-- Można  odwołać się do tego, że różne rzeczy mogą być reprodukowalne (kod, wyniki analiz, sposób zbierania danych), ale artykuł skupia się na jednym ztych aspektów. Chyba że skupia się na większej ich liczbie :)
+- Można  odwołać się do tego, że różne rzeczy mogą być reprodukowalne (kod, wyniki analiz, sposób zbierania danych), ale artykuł skupia się na jednym z tych aspektów. Chyba że skupia się na większej ich liczbie :)
 
 - Idealnie byłoby umieścić 2-3 zdania informujące jak do istniejących badań dotyczących reprodukowalności ma się ten artykuł i co nowego wnosi. Przykłady: 
 	- nikt do tej pory nie zbadał tego zagadnienia, 
