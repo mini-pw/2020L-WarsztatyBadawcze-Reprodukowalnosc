@@ -171,6 +171,8 @@ Te sekcje powinna zawierać co najmniej:
 
 Pracując później nad resztą artykułu oczywiście będzie można zmieniać ten wstęp, ale na potrzeby pracy domowej będzie oceniony w wersji z 21 kwietnia.
 
+- Robiąc pull request z pracą domową zacznijcie jego nazwę od REPR. Dzięki temu łatwiej mi będzie wyłapywać PR dotyczce naszego projektu. **W PR powinien zostać dodany tylko jeden plik `.Rmd`, bez renderowania książki na nowo.** Natomiast zachęcam do wyrenderwoania rozdziałów u siebie lokalnie w celu sprawdzenia, że tekst (w szczególności cytowania) dobrze się generuje.
+
 
 #### Jak cytować w ebooku?
 
