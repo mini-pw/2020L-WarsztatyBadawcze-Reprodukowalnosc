@@ -145,8 +145,43 @@ bookdown::render_book('./', 'bookdown::pdf_book')
 ### Praca Domowa III (5 pkt.)
 Termin: 21.04.2020
 
-Napisać Related Work artykułów dotyczących reprodukowalności.
-Umieścić Related Work w książce w odpowiednim artykule.
+Oddanie pracy domowej: cała grupa
+
+Napisać wstęp artykułu. Może to być jedna sekcja nazwana Introduction/Motivation albo dwie sekcje, gdzie pierwsza jest nazwana Introducition/Motivation a druga Related Work. Wybór pozostawiam autorom artykułu.
+
+Te sekcje powinna zawierać co najmniej:
+
+- 2-3 zdania wprowadzenia do tematu, na przykład dlaczego reprodukowalność jest ważna, czy to problem nauki czy biznesu, o jaką reprodukowalność chodzi. Można odwołać się do pojęcia długu technologicznego.
+
+- Zdefiniować reprodukowalność. Najlepiej powołując się na definicję z innego artykułu. Można skorzystać z artykułów umieszczonych w [prezenacji z drugich zajęć](https://github.com/mini-pw/2020L-WarsztatyBadawcze-Reprodukowalnosc/blob/master/Laboratoria/2020_03_03/Prezentacja.pdf).
+
+- Opis kilku prac dotyczących reprodukowalności (po 1-3 zdania na każdą pracę), przykładowe artykuły, które można cytować są w prezentacji wymienionej wyżej i w README przedmiotu. Gorąco zachęcam do własnych poszukiwań, na przykład wpisując słowa kluczowe w [Google Scholar](https://scholar.google.com/) lub [arXiv](https://arxiv.org/). Dobrą kopalnią źródeł jest też przeglądanie, jakie inne prace cytują autorzy artykułów o reprodukowalności. 
+
+- Można  odwołać się do tego, że różne rzeczy mogą być reprodukowalne (kod, wyniki analiz, sposób zbierania danych), ale artykuł skupia się na jednym ztych aspektów. Chyba że skupia się na większej ich liczbie :)
+
+- Idealnie byłoby umieścić 2-3 zdania informujące jak do istniejących badań dotyczących reprodukowalności ma się ten artykuł i co nowego wnosi. Przykłady: 
+	- nikt do tej pory nie zbadał tego zagadnienia, 
+	- ktoś zbadał to zagadnienie, ale 10 lat temu i chcemy zobaczyć czy wyniki będą podobne teraz,
+	- ktoś zbadał to zagadnienie ale dla innego języka lub czasopisma
+	- ktoś zrobił podobne badanie ale na mniejszą skalę
+    - ktoś zrobił podobne badanie, ale my skupiamy się tylko na artykułach dotyczących pakietów na bazie ggplot2, chcemy zobaczyć jak polscy autorzy wypadają na tle innych.
+	- ...
+
+- wszelki wkład ponad to co wymieniłam wyżej jest bardzo mile widziany.
+
+Pracując później nad resztą artykułu oczywiście będzie można zmieniać ten wstęp, ale na potrzeby pracy domowej będzie oceniony w wersji z 21 kwietnia.
+
+
+#### Jak cytować w ebooku?
+
+[Repozytorium z ebookiem](https://github.com/mini-pw/2020L-WB-Book)
+
+Cytować będziemy używając formatu [BibTeX](http://www.bibtex.org/).
+Informacje o cytowanych artykułach trzeba umieścić w pliku `book.bib` znajdującym się w repozytorium z książką. Są tam przykładowe prace w formacie BiBTex. 
+
+Zazwyczaj na stronie czasopisma da się wygenerować taki plik BiBteXowy dla artykułu, czasem jest to dosyć ukryte, najlepiej szukać przycisku z napisem "citation". Gdyby się nie udało polecam poszukać numeru doi artykułu i skorzystać ze strony [doi2bib](https://www.doi2bib.org/).
+
+Kiedy uda się umieścić artykuł w pliku `book.bib` odwoływać się do prac można przez `[@nazwa]`, gdzie nazwa to ciąg znaków z pierwszego pola z BiBteXa. Przykład użycia jest w pliku `index.Rmd` (cytowanie rlang).
 
 ## Projekt (55 pkt.)
 
