@@ -30,21 +30,21 @@
 
 * 2020-04-07 - Praca Domowa III + projekt
 
-* 2020-04-21 - projekt
+* 2020-04-21 - [projekt - część metodologiczna artykułu]()
 
-* 2020-04-28 - Prezentacja metodologicznej części projektu I
+* 2020-04-28 - projekt 
 
-* 2020-05-05 - Prezentacja metodologicznej części projektu II
+* 2020-05-05 - Prezentacja metodologicznej części projektu I
 
-* 2020-05-19 - projekt (termin oddania opisu części metodologicznej projektu)
+* 2020-05-19 - Prezentacja metodologicznej części projektu II (termin oddania opisu części metodologicznej projektu)[https://github.com/mini-pw/2020L-WarsztatyBadawcze-Reprodukowalnosc/blob/master/Laboratoria/2020_04_20/WB_21_04_2020.pdf]
 
 * 2020-05-26 - projekt
 
 * 2020-06-02 - projekt (termin oddania całego projektu (artykułu))
 
-* 2020-06-09 - ?
+* 2020-06-09 
 
-* 2020-06-16 - ?
+* 2020-06-16 
 
 
 ## Prezentacje (15 pkt.)
@@ -185,6 +185,7 @@ Zazwyczaj na stronie czasopisma da się wygenerować taki plik BiBteXowy dla art
 
 Kiedy uda się umieścić artykuł w pliku `book.bib` odwoływać się do prac można przez `[@nazwa]`, gdzie nazwa to ciąg znaków z pierwszego pola z BiBteXa. Przykład użycia jest w pliku `index.Rmd` (cytowanie rlang).
 
+
 ## Projekt (55 pkt.)
 
 Celem projektu jest wykonanie analizy artykułów naukowych pod kątem reprodukowalności. Projekt trzeba wykonać w grupie 3-osobowej.
@@ -193,7 +194,7 @@ Wynikiem projektu powinien być krótki artykuł naukowy (40 pkt.), minimum 3 st
 
 Podział punktów w ramach artykułu
 - Abstrakt: 5 pkt.
-- Introduction + Motivation: 10 pkt
+- Introduction + Motivation: 10 pkt.
 - Opis metodologii i wyników: 15 pkt. (oddanie po 5.05.2020 max 10 pkt.)
 - Wnioski: 10 pkt.
 
