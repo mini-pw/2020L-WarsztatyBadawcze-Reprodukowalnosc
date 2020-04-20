@@ -30,13 +30,13 @@
 
 * 2020-04-07 - Praca Domowa III + projekt
 
-* 2020-04-21 - [projekt - część metodologiczna artykułu]()
+* 2020-04-21 - [projekt - część metodologiczna artykułu](https://github.com/mini-pw/2020L-WarsztatyBadawcze-Reprodukowalnosc/blob/master/Laboratoria/2020_04_20/WB_21_04_2020.pdf)
 
 * 2020-04-28 - projekt 
 
 * 2020-05-05 - Prezentacja metodologicznej części projektu I
 
-* 2020-05-19 - Prezentacja metodologicznej części projektu II (termin oddania opisu części metodologicznej projektu)[https://github.com/mini-pw/2020L-WarsztatyBadawcze-Reprodukowalnosc/blob/master/Laboratoria/2020_04_20/WB_21_04_2020.pdf]
+* 2020-05-19 - Prezentacja metodologicznej części projektu II (termin oddania opisu części metodologicznej projektu)
 
 * 2020-05-26 - projekt
 
