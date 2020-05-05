@@ -1,0 +1,475 @@
+---
+title: 'Homework #1'
+author: "Bartosz Rożek"
+date: "26 03 2020"
+output:
+  word_document: default
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+## Article #1 - "fanplot: An R Package for VisualisingSequential Distributions" {-}
+
+Article link: https://journal.r-project.org/archive/2015/RJ-2015-002/RJ-2015-002.pdf
+
+### Abstract {-}
+Article is about fanplot package and ways to display sequential distribution. Fanplot is a type of chart that appear similiar to linechart, but it focuses on whole distribution instead of single central measure. 
+
+### Reproduction {-}
+```{r, fig.align='center'}
+library("fanplot")
+fan0(data = th.mcmc)
+```
+
+| *Original plot* |
+|:--:| 
+| ![](images/article1_1.png) | 
+|| 
+
+
+
+```{r, fig.align='center'}
+library("zoo")
+library("tsbugs")
+# create irregular multiple time series 
+th.mcmc2 <- zoo(th.mcmc, order.by = svpdx$date)
+# plot
+fan0(data = th.mcmc2, type = "interval", ln = c(0.5, 0.8, 0.95),llab = TRUE, rcex = 0.6)
+```
+
+| *Original plot* |
+|:--:| 
+| ![](images/article1_2.png) | 
+|| 
+
+```{r, fig.align='center'}
+# transparent fan with visible lines
+fan0(th.mcmc2, ln = c(5, 20, 50, 80, 95), alpha = 0, ln.col = "darkorange", llab = TRUE)
+# spaghetti lines
+fan(th.mcmc2, style = "spaghetti", n.spag = 20, alpha = 0.3)
+```
+
+| *Original plot* |
+|:--:| 
+| ![](images/article1_3.png) | 
+|| 
+
+```{r}
+head(boe)
+```
+
+```{r, fig.align='center'}
+# select relevant data
+y0 <- 2013
+boe0 <- subset(boe, time0 == y0)
+k <- nrow(boe0)
+
+# guess work to set percentiles the boe are plotting
+p <- seq(0.05, 0.95, 0.05)
+p <- c(0.01, p, 0.99)
+
+# quantiles of split-normal distribution for each probability (row) at each future
+# time point (column)
+cpival <- matrix(NA, nrow = length(p), ncol = k)
+for (i in 1:k)
+  cpival[, i] <- qsplitnorm(p, mode = boe0$mode[i],
+                            sd = boe0$uncertainty[i],
+                            skew = boe0$skew[i]) 
+
+# past data
+plot(cpi, type = "l", col = "tomato", lwd = 2,xlim = c(y0 - 5, y0 + 3), ylim = c(-2, 7),xaxt = "n", yaxt = "n", ylab = "")
+# background shading during forecast period
+rect(y0 - 0.25, par("usr")[3] - 1, y0 + 3, par("usr")[4] + 1,border = "gray90", col = "gray90")
+# add fan
+fan(data = cpival, data.type = "values", probs = p,
+    start = y0, frequency = 4, anchor = cpi[time(cpi) == y0 - 0.25],
+    fan.col = colorRampPalette(c("tomato", "gray90")), ln = NULL, rlab = NULL)
+# boe aesthetics
+axis(2, at = -2:7, las = 2, tcl = 0.5, labels = FALSE)
+axis(4, at = -2:7, las = 2, tcl = 0.5)
+axis(1, at = 2008:2016, tcl = 0.5)
+axis(1, at = seq(2008, 2016, 0.25), labels = FALSE, tcl = 0.2)
+abline(h = 2)                   # boe cpi target
+abline(v = y0 + 1.75, lty = 2)  # 2 year line
+```
+
+| *Original plot* |
+|:--:| 
+| ![](images/article1_4.png) | 
+|| 
+
+```{r, fig.align='center'}
+# simulate future values
+cpisim <- matrix(NA, nrow = 10000, ncol = k)
+for (i in 1:k)
+  cpisim[, i] <- rsplitnorm(n = 10000, mode = boe0$mode[i],
+                            sd = boe0$uncertainty[i],
+                            skew = boe0$skew[i])
+
+# truncate cpi series and plot
+cpi0 <- ts(cpi[time(cpi) < 2013], start = start(cpi), frequency = frequency(cpi))
+plot(cpi0, type = "l", lwd = 2, las = 1, ylab = "",
+     xlim = c(y0 - 5, y0 + 3.5), ylim = c(-2, 7))
+# add fan
+library("RColorBrewer")
+fan(data = cpisim, type = "interval", probs = seq(0.01,0.99,0.01),
+    start = y0, frequency = 4, ln = c(50,80,95), med.ln = FALSE,
+    fan.col = colorRampPalette(colors = rev(brewer.pal(9, "Oranges"))))
+```
+
+| *Original plot* |
+|:--:| 
+| ![](images/article1_5.png) | 
+|| 
+
+```{r, fig.align='center'}
+# plot past data
+plot(cpi0, type = "l", xlim = c(y0-5, y0+3), ylim = c(-2, 7), lwd = 2)
+
+# box plots
+fan(cpisim, style = "boxplot", start = y0, frequency = 4, outline = FALSE)
+```
+
+| *Original plot* |
+|:--:| 
+| ![](images/article1_6.png) | 
+|| 
+
+### Conclusion {-}
+Article was very easy to reproduce, one problem that came up was a package non availabile on CRAN. I dealt with it by using installing '.tar.gz' file downloaded from internet.
+
+
+
+
+## Article #2 - "Rmetrics - timeDate Package" {-}
+
+Article link: https://journal.r-project.org/archive/2011/RJ-2011-001/RJ-2011-001.pdf
+
+### Abstract {-}
+Article is about package 'timeDate'. This package makes handling with timezones, special days and holidays
+
+### Reproduction {-}
+
+```{r}
+library(timeDate)
+showClass("timeDate")
+
+Dates <- c("2009-09-28","2010-01-15")
+Times <- c(  "23:12:55",  "10:34:02")
+charvec <- paste(Dates, Times)
+getRmetricsOption("myFinCenter")
+
+timeDate(charvec)
+
+setRmetricsOptions(myFinCenter = "Zurich")
+timeDate(charvec)
+timeDate(charvec, zone = "Tokyo")
+
+timeDate(charvec, zone = "Zurich",
+          FinCenter = "NewYork")
+
+td <- timeDate(charvec, zone = "Zurich",
+               FinCenter = "NewYork")
+finCenter(td)
+
+finCenter(td) <- "Zurich"
+td
+
+whichFormat(charvec)
+
+setRmetricsOptions(myFinCenter = "GMT")
+#'timeDate'is now in the financial center "GMT"
+timeDate(charvec)
+
+# first three days in January 2010,
+timeSequence(from = "2010-01-01",
+             to =   "2010-01-03", by = "day")
+
+# first 3 months in 2010:
+timeSequence(from = "2010-01-01",
+              to = "2010-03-31", by = "month")
+
+timeCalendar()
+
+timeCalendar(2010, m=1, d=1:4, h=16,
+             zone = "Tokyo", FinCenter = "Zurich")
+
+timeDate(ch <- "2010-01-31 24:00:00")
+
+getRmetricsOption("myFinCenter")
+
+# change to Zurich:
+  setRmetricsOptions(myFinCenter = "Zurich")
+  
+# first few financial centers:
+head(listFinCenter())
+
+# European centers starting with A or B:
+listFinCenter("Europe/[AB].*") # -> nine
+
+Zurich()[64:67, ]
+
+thisYear <- getRmetricsOption("currentYear")
+Easter(thisYear:(thisYear+5))
+
+Easter(2010)
+
+(tS <- timeSequence(Easter(2010, -2),
+                    Easter(2010, +3)))
+
+(tS1 <- tS[isWeekday(tS)])
+
+(tS2 <- tS[isBizday(tS, holidayZURICH(2010))])
+
+dayOfWeek(tS2)
+
+charvec <- c("2011-03-01", "2011-04-01")
+# Last day in quarter
+timeLastDayInQuarter(charvec)
+
+# Second Sunday of each month:
+timeNthNdayInMonth(charvec, nday = 0, nth = 2)
+
+# Closest Friday that occurred before:
+timeNdayOnOrBefore(charvec, nday = 5)
+
+showMethods("coerce", class = "timeDate")
+
+ZH <- timeDate("2010-01-01 16:00", zone = "GMT",
+               FinCenter = "Zurich")
+NY <- timeDate("2010-01-01 18:00", zone = "GMT",
+               FinCenter = "NewYork")
+c(ZH, NY)
+
+c(NY, ZH)
+
+
+```
+
+
+### Conclusion {-}
+Article is fully reproductive, the only difference is seen due to the fact that functions takes current date.
+
+## Article #3 - "rworldmap: A New R package forMapping Global Data" {-}
+
+Article link: https://journal.r-project.org/archive/2011/RJ-2011-006/RJ-2011-006.pdf
+
+### Abstract {-}
+Article is about fanplot package and ways to display sequential distribution. Fanplot is a type of chart that appear similiar to linechart, but it focuses on whole distribution instead of single central measure. 
+
+### Reproduction {-}
+
+```{r}
+library(rworldmap)
+data(countryExData)
+sPDF <- joinCountryData2Map( countryExData,joinCode = "ISO3",nameJoinColumn = "ISO3V10")
+
+data(countryExData) 
+sPDF <- joinCountryData2Map( countryExData,
+                             joinCode = "ISO3",
+                             nameJoinColumn = "ISO3V10")
+mapDevice() 
+#create world map shaped window
+mapCountryData(sPDF,nameColumnToPlot='BIODIVERSITY')
+```
+
+```{r}
+data(gridExData)
+mapDevice() 
+#create world map shaped window
+mapGriddedData(gridExData)
+```
+
+Executing frame below ends up with error.
+
+```{r}
+# mapDevice() 
+#create world map shaped window
+#mapBubbles(dF=getMap(),
+           # nameZSize="POP2005",
+           # nameZColour="REGION",
+           # colourPalette="rainbow",
+           # oceanCol="lightblue",
+           # landCol="wheat")
+```
+
+```{r}
+data(countryExData)
+country2Region(countryExData,
+               nameDataColumn="CLIMATE",
+               joinCode="ISO3",
+               nameJoinColumn="ISO3V10",
+               regionType="Stern",
+               FUN="mean")
+```
+
+```{r}
+data(countryExData)
+mapDevice() 
+#create world map shaped window
+mapByRegion(countryExData,
+            nameDataColumn="CLIMATE",
+            joinCode="ISO3",
+            nameJoinColumn="ISO3V10",
+            regionType="Stern",
+            FUN="mean")
+```
+
+```{r}
+library(classInt)
+library(RColorBrewer)
+#getting smallexample data and joining to a map
+data(countryExData)
+sPDF <- joinCountryData2Map(countryExData,
+                            joinCode = "ISO3",
+                            nameJoinColumn = "ISO3V10",
+                            mapResolution = "coarse")
+
+#getting class intervals
+classInt <- classIntervals( sPDF[["EPI"]],
+                            n=5, style = "jenks")
+catMethod = classInt[["brks"]]
+#getting colours
+colourPalette <- brewer.pal(5,'RdPu')
+#plot map
+mapDevice()
+#create world map shaped window
+mapParams <- mapCountryData(sPDF,
+                            nameColumnToPlot="EPI",
+                            addLegend=FALSE,
+                            catMethod = catMethod,
+                            colourPalette=colourPalette )
+#adding legend
+do.call(addMapLegend,
+        c(mapParams,legendLabels="all",
+          legendWidth=0.5,
+          legendIntervals="data",
+          legendMar = 2))
+```
+
+### Conclusion {-}
+First part of article is easy to reproduce, only one frame is producing error. Unfortunately, after that author is using data freely available on the web, which isn't availabile now. It's probably due to the fact that article was written in 2011. To conclude I consider this article unreproducibal.
+
+
+## Article #4 - "Raster Images in R Graphics" {-}
+
+Article link: https://journal.r-project.org/archive/2011/RJ-2011-008/RJ-2011-008.pdf
+
+### Abstract {-}
+Article is about new support for R graphics engine, which improves graphics manipulation in R. 
+
+### Reproduction {-}
+
+```{r}
+library(grid)
+grid.raster(1:10/11)
+```
+
+```{r}
+grid.raster(matrix(colors()[1:100], ncol=10),
+            interpolate=FALSE)
+```
+
+```{r}
+grid.raster(as.raster(1:10, max=11))
+```
+
+```{r}
+grid.raster(1:10/11, interpolate=FALSE)
+grid.raster(matrix(colors()[1:100], ncol=10))
+```
+
+```{r}
+download.file("http://cran.r-project.org/Rlogo.jpg",
+              "Rlogo.jpg")
+library(ReadImages)
+logo <- read.jpeg("Rlogo.jpg")
+par(mar=rep(0, 4))
+plot(logo)
+```
+```{r}
+grid.raster(logo)
+```
+
+```{r}
+x <- y <- seq(-4*pi, 4*pi, len=27)
+r <- sqrt(outer(x^2, y^2, "+"))
+z <- cos(r^2)*exp(-r/6)
+image <- (z - min(z))/diff(range(z))
+step <- diff(x)[1]
+xrange <- range(x) + c(-step/2, step/2)
+yrange <- range(y) + c(-step/2, step/2)
+plot(x, y, ann=FALSE,
+     xlim=xrange, ylim=yrange,
+     xaxs="i", yaxs="i")
+rasterImage(image,
+            xrange[1], yrange[1],
+            xrange[2], yrange[2],
+            interpolate=FALSE)
+
+x <- c(0.00, 0.40, 0.86, 0.85, 0.69, 0.48,
+       0.54, 1.09, 1.11, 1.73, 2.05, 2.02)
+library(lattice)
+barchart(1:12 ~ x, origin=0, col="white",
+         panel=function(x, y, ...) {
+           panel.barchart(x, y, ...)
+           grid.raster(logo, x=0, width=x, y=y,
+                       default.units="native",
+                       just="left",
+                       height=unit(2/37,
+                                   "npc"))
+           })
+
+z <- matrix(runif(500*500), ncol=500)
+
+pdf("image.pdf")
+image(z, col=grey(0:99/100))
+dev.off()
+pdf("gridraster.pdf")
+grid.raster(z, interp=FALSE)
+dev.off()
+file.info("image.pdf", "gridraster.pdf")["size"]
+```
+
+```{r}
+barchart(1:12 ~ x, origin=0, col="white",
+         panel=function(x, y, ...) {
+           panel.barchart(x, y, ...)
+           grid.raster(t(1:10/11), x=0,
+                       width=x, y=y,
+                       default.units="native",
+                       just="left",
+                       height=unit(2/37,
+                                   "npc"))
+           })
+```
+
+```{r}
+library(maps)
+par(mar=rep(0, 4))
+map(region="Spain", col="black", fill=TRUE)
+
+mask <- grid.cap()
+
+library(png)
+espana <- readPNG("images/1000px-Flag_of_Spain.png")
+espanaRaster <- as.raster(espana)
+
+espanaRaster <- espanaRaster[, 1:667]
+# ERROR
+# mask <- mask[1:dim(mask)[1], ]
+
+# espanaRaster[mask != "black"] <- "transparent"
+# par(mar=rep(0, 4))
+# map(region="Spain")
+# grid.raster(espanaRaster, y=1, just="top")
+# map(region="Spain", add=TRUE)
+```
+
+### Conclusion {-}
+As we can see, the article is preety much fully reproducible, except of the last example.
