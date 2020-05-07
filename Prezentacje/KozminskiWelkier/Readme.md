@@ -1,0 +1,1 @@
+Prezentacja nt. pakietu `stplanr`

@@ -1,0 +1,391 @@
+---
+title: "Raport"
+author: "Marcin Łukaszyk"
+date: "March 31, 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+set.seed(1234)
+```
+
+# First Article
+
+Associative Classification in R: arc, arulesCBA, and rCBA.
+
+[Link](https://journal.r-project.org/archive/2019/RJ-2019-048/index.html) to the article.
+The peper is from 2018-05-29 so it should be repricleble.
+Article contains intorduction to the CBA algorithm.
+Our problem is a classification problem.
+We want to predict species using the four measurements.
+To do it we will use algorithms named before.
+
+First we dived iris data set to a trainig and testting set in 80:20 proportion.
+```{r iris}
+data("iris")
+iris <- iris[sample(seq(nrow(iris))), ]
+iris_train <- iris[1:(nrow(iris)*.8), ]
+iris_test <- iris[-(1:(nrow(iris)*.8)), ]
+
+kable(head(iris_train))
+kable(head(iris_test))
+```
+
+As we can se the table differs due to nature of a sample function.
+It samples randomly thus making results diffrent each time without setting a seed.
+Unfortunately authors didnt set one in the paper or if they did they set diffrent one that is in the soruce code.
+We eill use set from source code
+
+
+
+## arulesCBA
+
+```{r warning=FALSE, include=FALSE}
+library(arules)
+library(arulesCBA)
+```
+```{r }
+iris_train_disc <- discretizeDF.supervised(Species ~ ., data = iris_train,
+method = "mdlp")
+kable(head(iris_train_disc))
+```
+
+We got similar resluts.
+Thats sign that the algorithm works.
+
+```{r}
+trans_train <- as(iris_train_disc, "transactions")
+inspect(head(trans_train, n = 3))
+
+```
+```{r eval=FALSE}
+rules <- apriori(trans_train, parameter = list(support = 0.01, confidence = 0.8),
+  appearance = list(rhs = grep("Species=", itemLabels(trans_train), value = TRUE),
+  default = "lhs"))
+```
+```{r}
+rules <- mineCARs(Species ~ ., data = trans_train, support = 0.01, confidence = 0.8)
+inspect(head(rules,n=3))
+
+```
+
+We come to simmilar yet diffrent result.
+
+## arc
+
+Next we got a "arc" R package.
+This is package that implements CBA algorithm.
+
+```{r include=FALSE}
+library('arc')
+```
+
+We can learn CBA model from iris data set in method shown below.
+
+```{r warning=FALSE}
+classifier <- arc::cba(iris_train, "Species")
+```
+```{r}
+inspect(classifier@rules)
+
+```
+
+## arulesCBA
+
+Now we will look at the arulesCBA package.
+
+```{r include=FALSE}
+library("arulesCBA")
+```
+
+```{r}
+classifier <- arulesCBA::CBA(Species ~ ., data = iris_train,
+supp = 0.05, confidence = 0.9)
+```
+```{r}
+classifier
+```
+
+We got te same results.
+
+## rCBA
+
+Lastly we will look at the rCBA package.
+
+```{r include=TRUE,warning=FALSE} 
+library("rCBA")
+```
+```{r warning=FALSE}
+classifier <- rCBA::build(iris_train)
+inspect(classifier$model)
+```
+
+## Conclusios
+
+This article is repriceable.
+
+
+# Second Article
+
+In this paper we use "lpirfs" package which is used to analysis of impulse in econometrics.
+[Link to the peper](https://journal.r-project.org/archive/2019/RJ-2019-052/index.html)
+
+```{r warning=FALSE,message=FALSE}
+library(lpirfs)
+library(ggpubr)
+library(gridExtra)
+library(tidyverse)
+```
+```{r}
+endog_data <- interest_rules_var_data
+```
+```{r}
+results_lin <- lp_lin(endog_data,
+                      lags_endog_lin = 4,
+                      trend          = 0,
+                      shock_type     = 0,
+                      confint        = 1.96,
+                      hor            = 12)
+
+linear_plots <- plot_lin(results_lin)
+```
+
+```{r}
+lin_plots_all <- sapply(linear_plots, ggplotGrob)
+lp_lin_plots  <- marrangeGrob(lin_plots_all, nrow = ncol(endog_data), 
+                                              ncol = ncol(endog_data), top = NULL)
+
+lp_lin_plots
+```
+
+We got simmilar resulsts.
+
+```{r}
+switching_data <-  if_else(dplyr::lag(endog_data$Infl, 3) > 4.75, 1, 0)
+results_nl    <- lp_nl(endog_data,
+                        lags_endog_lin  = 4,
+                        lags_endog_nl   = 4,
+                        trend           = 0,
+                        shock_type      = 0,
+                        confint         = 1.96,
+                        hor             = 12,
+                        switching       = switching_data,
+                        lag_switching   = F,
+                        use_logistic    = F)
+
+ nl_plots <- plot_nl(results_nl)
+ 
+ single_plots <- nl_plots$gg_s1[c(3, 6, 9)]
+single_plots[4:6] <- nl_plots$gg_s2[c(3, 6, 9)]
+all_plots <- sapply(single_plots, ggplotGrob)
+marrangeGrob(all_plots, nrow = 3, ncol = 2, top = NULL)
+```
+
+Everything works as intended.
+
+```{r eval=TRUE}
+
+ ag_data       <- ag_data
+ sample_start  <- 7
+ sample_end    <- dim(ag_data)[1]
+
+ endog_data    <- ag_data[sample_start:sample_end,3:5]
+
+ shock         <- ag_data[sample_start:sample_end, 3]
+
+ results_lin_iv <- lp_lin_iv(endog_data,
+                             lags_endog_lin = 4,
+                             shock          = shock,
+                             trend          = 0,
+                             confint        = 1.96,
+                             hor            = 20)
+
+
+ iv_lin_plots    <- plot_lin(results_lin_iv)
+
+ ag_data           <- ag_data
+ endog_data        <- ag_data[sample_start:sample_end, 3:5]
+
+ shock             <- ag_data[sample_start:sample_end, 7]
+
+ exog_data         <- ag_data[sample_start:sample_end, 6]
+
+ switching_variable <- ag_data$GDP_MA[sample_start:sample_end] - 0.8
+
+ results_nl_iv <- lp_nl_iv(endog_data,
+                           lags_endog_nl     = 3,
+                           shock             = shock,
+                           exog_data         = exog_data,
+                           lags_exog         = 4,
+                           trend             = 0,
+                           confint           = 1.96,
+                           hor               = 20,
+                           switching         = switching_variable,
+                           use_hp            = FALSE,
+                           gamma             = 3)
+
+ plots_nl_iv <- plot_nl(results_nl_iv)
+
+ combine_plots <- list()
+
+ combine_plots[[1]] <- iv_lin_plots[[1]]
+ combine_plots[[2]] <- iv_lin_plots[[3]]
+
+ combine_plots[[3]] <- plots_nl_iv$gg_s1[[1]]
+ combine_plots[[4]] <- plots_nl_iv$gg_s1[[3]]
+
+ combine_plots[[5]] <- plots_nl_iv$gg_s2[[1]]
+ combine_plots[[6]] <- plots_nl_iv$gg_s2[[3]]
+
+ lin_plots_all     <- sapply(combine_plots, ggplotGrob)
+ combine_plots_all <- marrangeGrob(lin_plots_all, nrow = 2, ncol = 3, top = NULL)
+ combine_plots_all
+```
+
+We recreated plots from article.
+
+```{r}
+  library(httr)
+  library(readxl)
+  library(dplyr)
+ 
+  url_jst <-"http://www.macrohistory.net/JST/JSTdatasetR3.xlsx"
+  GET(url_jst, write_disk(jst_link <- tempfile(fileext = ".xlsx")))
+  jst_data <- read_excel(jst_link, 2L)
+ 
+  jst_data <- jst_data                    %>%
+              dplyr::filter(year <= 2013) %>%
+              dplyr::select(country, year, everything())
+ 
+  data_set <- jst_data %>%
+             mutate(stir    = stir)                         %>%
+             mutate(mortgdp = 100*(tmort/gdp))              %>%
+             mutate(hpreal  = hpnom/cpi)                    %>%
+             group_by(country)                              %>%
+             mutate(hpreal  = hpreal/hpreal[year==1990][1]) %>%
+             mutate(lhpreal = log(hpreal))                  %>%
+   
+             mutate(lhpy    = lhpreal - log(rgdppc))        %>%
+             mutate(lhpy    = lhpy - lhpy[year == 1990][1]) %>%
+             mutate(lhpreal = 100*lhpreal)                  %>%
+             mutate(lhpy    = 100*lhpy)                     %>%
+             ungroup()                                      %>%
+   
+             mutate(lrgdp   = 100*log(rgdppc))              %>%
+             mutate(lcpi    = 100*log(cpi))                 %>%
+             mutate(lriy    = 100*log(iy*rgdppc))           %>%
+             mutate(cay     = 100*(ca/gdp))                 %>%
+             mutate(tnmort  = tloans - tmort)               %>%
+             mutate(nmortgdp = 100*(tnmort/gdp))            %>%
+             dplyr::select(country, year, mortgdp, stir, ltrate, 
+                                                    lhpy, lrgdp, lcpi, lriy, cay, nmortgdp)
+ 
+ 
+  data_sample <- seq(1870, 2016)[which(!(seq(1870, 2016) %in%
+                                            c(seq(1914, 1918), 
+                                            seq(1939, 1947))))]
+
+  results_panel <- lp_lin_panel(data_set  = data_set,  data_sample  = data_sample,
+                                endog_data        = "mortgdp", cumul_mult   = TRUE,
+                                shock             = "stir",    diff_shock   = TRUE,
+                                panel_model       = "within",  panel_effect = "individual",
+                                robust_cov        = "vcovSCC", c_exog_data  = "cay",
+                                c_fd_exog_data    = colnames(data_set)[c(seq(4,9),11)],
+                                l_fd_exog_data    = colnames(data_set)[c(seq(3,9),11)],
+                                lags_fd_exog_data = 2,      confint      = 1.67,
+                                hor               = 10)
+ 
+  plot_lin_panel <- plot_lin(results_panel)
+  plot(plot_lin_panel[[1]])
+```
+
+The last plot
+
+```{r}
+ results_panel <- lp_nl_panel(data_set          = data_set,  
+                              data_sample       = data_sample,
+                              endog_data        = "mortgdp", cumul_mult     = TRUE,
+                              shock             = "stir",    diff_shock     = TRUE,
+                              panel_model       = "within",  panel_effect   = "individual",
+                              robust_cov        = "vcovSCC", switching      = "lrgdp",
+                              lag_switching     = TRUE,      use_hp         = TRUE,
+                              lambda            = 6.25,      gamma          = 10,
+                              c_exog_data       = "cay",     
+                              c_fd_exog_data    = colnames(data_set)[c(seq(4,9),11)],
+                              l_fd_exog_data    = colnames(data_set)[c(seq(3,9),11)], 
+                              lags_fd_exog_data = 2,      
+                              confint           = 1.67,
+                              hor               = 10)
+ 
+  nl_plots      <- plot_nl(results_panel)
+  combine_plots <- list(nl_plots$gg_s1[[1]], nl_plots$gg_s2[[1]])
+  nonlinear_panel_plots <- marrangeGrob(combine_plots, nrow = 1, ncol = 2, top = NULL)
+  nonlinear_panel_plots
+```
+
+Whole article is replicable
+
+# Third Article
+
+Last arlicle will be about glmperm packege.
+It is used for inferencing with small and moderate sized data sets.
+[You can access paper here.](https://journal.r-project.org/archive/2010/RJ-2010-007/index.html)
+This packege is not on CRAN so we need to install it manually from github.
+
+```{r}
+library(devtools)
+install_github('cran/glmperm')
+library(glmperm)
+```
+```{r warning=FALSE}
+n <- 20
+set.seed(4278)
+x1 <- rnorm(n)
+x0 <- rnorm(n)+x1
+y1 <- ifelse(x0+x1+2*rnorm(n)>0,1,0)
+test1 <- prr.test(y1~x0+x1,
+var="x0", family=binomial())
+x2 <- rbinom(n,1,0.6)
+y2 <- ifelse(x1+x2+rnorm(n)>0,1,0)
+test2 <- prr.test(y2~x1+x2, var="x1",
+nrep=10000,family=binomial())
+set.seed(4278)
+x1 <- rnorm(n)
+x0 <- rnorm(n) + x1
+nu <- rgamma(n, shape = 2, scale = 1)
+y <- rpois(n, lambda = exp(2) * nu)
+test3 <- prr.test(y~x0+x1,
+var="x0", family=poisson())
+test4 <- prr.test(y~x0, var="x0",
+nrep=1000,family=poisson())
+```
+
+```{r}
+summary(test2)
+
+```
+
+```{r}
+library('coin')
+data(treepipit, package="coin")
+test5<-prr.test(counts~cbpiles+coverstorey
++coniferous+coverregen,data=treepipit,
+var="cbpiles",family=poisson())
+summary(test5)
+```
+
+```{r}
+test6<-prr.test(counts~cbpiles+coverstorey
++coniferous+coverregen,data=treepipit,
+var="cbpiles",family=quasipoisson())
+summary(test6)
+```
+
+Everything works.
+
+# Summary
+
+All of given articles are repilicable.
+The only problem was were the packege wasn't on cran but it is easily fixed when it is on a git hub page.  

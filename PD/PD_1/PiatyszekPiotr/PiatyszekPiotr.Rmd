@@ -1,0 +1,314 @@
+---
+title: "PD 1"
+author: "Piotr Piątyszek"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1) dataMaid: Your Assistant for Documenting Supervised Data Quality Screening in R
+
+From the article's abstract, where `dataMaid` package is described as implementing *"an extensive and customizable suite of quality assessment aids that can be applied to a dataset in order to identify potential problems in its variables. The results are presented in an auto-generated, non-technical, stand-alone overview document intended to be perused by an investigator with an understanding of the variables in the data, but not necessarily knowledge of R"* we can find out what the package is for.
+
+[the article page link](https://www.jstatsoft.org/index.php/jss/article/view/v090i06)
+
+[CRAN link](https://cran.r-project.org/web/packages/dataMaid/index.html)
+
+Firstly, the installation - it went smoothly and fast.
+
+```{r, eval=FALSE}
+install.packages('dataMaid')
+```
+
+#### Creating a data overview report
+
+*"The `makeDataReport()` function is the primary workhorse of dataMaid and it is the only function needed to generate a data report using the standard battery of tests. The data report itself is an overview document, intended for reading by humans, in either PDF, HTML or Word (.docx) format"*
+
+There was an appendix provided as an example of a data report in PDF format, produced by calling `makeDataReport()` on the dataset `toyData` available in `dataMaid`.
+
+```{r}
+library("dataMaid")
+data("toyData", package = "dataMaid")
+toyData
+```
+
+The dataset was loaded successfully. 
+```{r, eval=FALSE}
+makeDataReport(toyData)
+```
+
+An R markdown file and a rendered PDF, Word or HTML overview document are produced, saved to the working directory and opened for immediate inspection. It all worked as descibed.
+
+[PDF output](dataMaid_toyData.pdf)
+
+```{r eval=FALSE}
+# html output
+makeDataReport(toyData, output = "html", onlyProblematic = TRUE, maxProbVals = 2, replace = TRUE)
+
+# html - options set not to render nor open
+makeDataReport(toyData, output = "html", render = FALSE, openResult = FALSE, replace = TRUE)
+```
+The html output also worked correctly, so by far this article's reproducibility is great.
+
+[HTML output](dataMaid_toyData.html)
+
+Now, let's see how some helper functions work:
+
+```{r}
+allSummaryFunctions()
+
+setSummaries()
+
+defaultCharacterSummaries()
+
+defaultFactorChecks()
+```
+The results are exactly as expected. 
+
+#### Data cleaning by hand: An example
+
+```{r}
+
+check(toyData$events) 
+
+check(toyData$events, checks = setChecks(numeric = "identifyMissing"))
+
+identifyMissing(toyData$events)
+
+missEvents <- identifyMissing(toyData$events)
+str(missEvents)
+toyData$events[toyData$events %in% missEvents$problemValues] <- NA
+identifyMissing(toyData$events)
+
+```
+
+Let's check `visualize{)` and `summarize()` functions' results`
+
+```{r}
+visualize(toyData$events)
+summarize(toyData$events)
+summarize(toyData$events, summaries = setSummaries( numeric = defaultNumericSummaries(remove = c("variableType", "countMissing"))))
+
+```
+
+All results are exactly as expected.
+
+
+
+#### A worked example: Dirty presidents
+This time the task was to create a report describing the `presidentData` dataset, which is available in dataMaid and use the information from this report to clean up the data. 
+
+`presidentData` is a slightly mutilated dataset with information about the 45 first US presidents, but with a few common data issues and a blind passenger.
+
+```{r eval=FALSE}
+data("presidentData", package = "dataMaid")
+head(presidentData)
+
+makeDataReport(presidentData, replace = TRUE,
+ treatXasY = list("Name" = "character"), checks = setChecks(character =
+ defaultCharacterChecks(remove = "identifyLoners")),
+ reportTitle = "Dirty president data")
+```
+
+[PDF output](dataMaid_presidentData.pdf) is correct again.
+
+
+```{r}
+# df modifications
+presidentData$lastName[presidentData$lastName == " Truman"] <- "Truman"
+presidentData$stateOfBirth[presidentData$stateOfBirth == "New york"] <- "New York"
+presidentData$assassinationAttempt <- factor(presidentData$assassinationAttempt)
+presidentData$ageAtInauguration <- as.numeric(presidentData$ageAtInauguration)
+presidentData$ageAtInauguration <- as.numeric(as.character(presidentData$ageAtInauguration))
+presidentData$lastName[presidentData$firstName == "."]
+presidentData$firstName[presidentData$firstName == "."] <- "Donald"
+
+# Now, we have the outlier birthday stored and can use it 
+# to select and print the appropriate observation in the dataset:
+birthdayOutlierVal <- identifyOutliers(presidentData$birthday)$problemValues
+presidentData[presidentData$birthday == birthdayOutlierVal, ]
+
+presidentData <-  presidentData[presidentData$birthday != birthdayOutlierVal, ]
+summarize(presidentData$presidencyYears)
+
+presidentData[is.na(presidentData$presidencyYears) |
+ presidentData$presidencyYears %in%
+ identifyOutliers(presidentData$presidencyYears)$problemValues,
+ c("firstName", "lastName", "presidencyYears")]
+presidentData$presidencyYears[presidentData$lastName == "Obama"] <- 8
+```
+```{r eval=FALSE}
+makeDataReport(presidentData, vol = "_cleaned",
+ treatXasY = list(Name = "character", complex = "numeric"),
+ checks = setChecks(character =
+ defaultCharacterChecks(remove = "identifyLoners")),
+ reportTitle = "Dirty president data - cleaned", replace = TRUE)
+```
+The last created a new data report stored in the file [dataMaid_presidentData_cleaned.pdf](dataMaid_presidentData_cleaned.pdf) 
+
+#### Rubbing down data cleaning challenges
+
+
+```{r, eval=FALSE}
+makeDataReport(toyData, open = FALSE, quiet = "silent", vol = paste("_", format(Sys.time(), "%m-%d%-%y_%H.%M"), sep = ""))
+```
+If, e.g., the report was created at 3 pm on June 30, 2019, the report will have the file name dataMaid_toyData_06-30-2019_15.00.pdf, making it easy to find.
+
+```{r, eval=FALSE}
+makeDataReport(toyData, onlyProblematic = TRUE, mode = "check", replace = TRUE)
+```
+Only the checking results were printed, and only for variables where problems were identified. 
+
+```{r}
+toyChecks <- check(toyData)
+foo <- function(x) { any(sapply(x, function(y) y[["problem"]]))}
+sapply(toyChecks, foo)
+```
+
+
+### Verdict
+This article's reproducibility is **very good**.
+
+# 2) clustMixType: User-Friendly Clustering of Mixed-Type Data in R by Gero Szepannek
+
+the R package `clustMixType` which provides an implementation of k-prototypes in R
+
+
+[the article page link](https://journal.r-project.org/archive/2018/RJ-2018-048/index.html)
+
+
+
+The installation went smoothly and fast.
+
+```{r, eval=FALSE}
+install.packages("clustMixType")
+
+# also will be needed:
+install.packages("wesanderson")
+```
+
+We tried to reproduce the output od the example from the article:
+
+```{r}
+# generate toy data with factors and numerics
+
+n   <- 100
+prb <- 0.9
+muk <- 1.5 
+clusid <- rep(1:4, each = n)
+
+x1 <- sample(c("A","B"), 2*n, replace = TRUE, prob = c(prb, 1-prb))
+x1 <- c(x1, sample(c("A","B"), 2*n, replace = TRUE, prob = c(1-prb, prb)))
+x1 <- as.factor(x1)
+
+x2 <- sample(c("A","B"), 2*n, replace = TRUE, prob = c(prb, 1-prb))
+x2 <- c(x2, sample(c("A","B"), 2*n, replace = TRUE, prob = c(1-prb, prb)))
+x2 <- as.factor(x2)
+
+x3 <- c(rnorm(n, mean = -muk), rnorm(n, mean = muk), rnorm(n, mean = -muk), rnorm(n, mean = muk))
+x4 <- c(rnorm(n, mean = -muk), rnorm(n, mean = muk), rnorm(n, mean = -muk), rnorm(n, mean = muk))
+
+x <- data.frame(x1,x2,x3,x4)
+
+library(clustMixType)
+kpres <- kproto(x = x, k = 4)
+kpres # output 1
+summary(kpres) # output 2
+library(wesanderson)
+par(mfrow=c(2,2))
+clprofiles(kpres, x, col = wes_palette("Royal1", 4, type = "continuous")) # figure 1
+```
+
+The resulting output is of the form as it should. It isn't identic as we used `sample()` function.
+
+
+```{r, results='hide'}
+Es <- numeric(10)
+for(i in 1:10){
+kpres <- kproto(x, k = i, nstart = 5)
+Es[i] <- kpres$tot.withinss
+}
+```
+```{r}
+plot(1:10, Es, type = "b", ylab = "Objective Function", xlab = "# Clusters",
+main = "Scree Plot") # figure 2
+
+```
+
+### Verdict
+This article's reproducibility is **good**.
+
+# 3) Forecast Combinations in R using the `ForecastComb` Package
+
+This package is to provide researchers and practitioners with a comprehensive implementation of the most common ways in which forecasts can be combined. 
+
+[the article page link](https://journal.r-project.org/archive/2018/RJ-2018-052/index.html)
+
+
+The installation - it lasted a while, but it was ok in the end.
+
+```{r, eval=FALSE}
+install.packages("ForecastComb")
+```
+
+Firstly, we gonna check if a simple simulation example is reproducible:
+```{r}
+library(ForecastComb)
+actual <- rnorm(100)
+forecasts <- matrix(rnorm(1000, 1), 100, 10)
+input_data <- foreccomb(actual, forecasts)
+# Manual Selection of Trimming Factor:
+model1 <- comb_TA(input_data, trim_factor = 0.3)
+# Assess accuracy of the combined forecast:
+model1$Accuracy_Train
+
+# Algorithm-Optimized Selection of Trimming Factor:
+model2 <- comb_TA(input_data, criterion = "RMSE")
+# Assess accuracy of the combined forecast:
+model2$Accuracy_Train
+
+```
+There was a misspell 'model1$AccuracyTrain' didn't work at first. After adding the symbol '_' it is all good.
+
+#### UK Electricity Supply: An Empirical Example
+
+The ForecastComb package includes the dataset `electricity`, which is a multivariate time series of monthly UK electricity supply (in GWh) from January 2007 to March 2017, and 5 univariate time series forecasts for the same series and period. The observed data series is sourced from the International Energy Agency (IEA, 2017).
+
+```{r}
+ data(electricity)
+ train.obs <- electricity[1:84, 6]
+ train.pred <- electricity[1:84, 1:5]
+ test.obs <- electricity[85:123, 6]
+ test.pred <- electricity[85:123, 1:5]
+ input_data <- foreccomb(train.obs, train.pred, test.obs, test.pred)
+ 
+ cs_dispersion(input_data, measure = "SD", plot = TRUE)
+```
+```{r results='hide', warning=FALSE, message=FALSE, error=FALSE}
+  ####### ESTIMATION OF STATIC FORECAST COMBINATIONS ########
+SA <- comb_SA(input_data)
+OLS_static <- comb_OLS(input_data)
+EIG1_static <- comb_EIG1(input_data)
+EIG4_static <- comb_EIG4(input_data, criterion = "MAE")
+ ###### ESTIMATION OF DYNAMIC FORECAST COMBINATIONS
+OLS_dyn <- rolling_combine(input_data, "comb_OLS")
+EIG1_dyn <- rolling_combine(input_data, "comb_EIG1")
+EIG4_dyn <- rolling_combine(input_data, "comb_EIG4", criterion = "MAE")
+```
+```{r}
+summary(OLS_static)
+
+##### ACTUAL VS FITTED PLOT #####
+plot(OLS_dyn)
+ ##### COMBINATION WEIGHTS #####
+colMeans(OLS_dyn$Weights)
+
+```
+
+The plots and results match the article.
+
+### Verdict
+This article's reproducibility is **very good**.

@@ -1,4 +1,4 @@
-# 2019L Warsztaty Badawcze Reprodukowalność
+# 2020L Warsztaty Badawcze Reprodukowalność
 
 ## [Wykład Warsztatów Badawczych](https://github.com/mini-pw/2020L-WarsztatyBadawcze)
 
@@ -30,21 +30,21 @@
 
 * 2020-04-07 - Praca Domowa III + projekt
 
-* 2020-04-21 - projekt
+* 2020-04-21 - [projekt - część metodologiczna artykułu](https://github.com/mini-pw/2020L-WarsztatyBadawcze-Reprodukowalnosc/blob/master/Laboratoria/2020_04_20/WB_21_04_2020.pdf)
 
-* 2020-04-28 - Prezentacja metodologicznej części projektu I
+* 2020-04-28 - projekt 
 
-* 2020-05-05 - Prezentacja metodologicznej części projektu II
+* 2020-05-05/ 2020-05-06/ 2020-05-07 - Prezentacja metodologicznej części projektu
 
-* 2020-05-19 - projekt (termin oddania opisu części metodologicznej projektu)
+* 2020-05-19 - termin oddania opisu części metodologicznej projektu
 
 * 2020-05-26 - projekt
 
 * 2020-06-02 - projekt (termin oddania całego projektu (artykułu))
 
-* 2020-06-09 - ?
+* 2020-06-09 
 
-* 2020-06-16 - ?
+* 2020-06-16 
 
 
 ## Prezentacje (15 pkt.)
@@ -77,20 +77,114 @@ Na każdą pracę domową jest czas do momentu rozpoczęcia kolejnych zajęć.
 
 
 ### Praca Domowa I (7 pkt.)
-Spróbować (może się nie udać) zreprodukować co najmniej trzy wybrane artykuły naukowe (5 pkt. + 2 pkt. za znalezienie niereprodukowalnego i zidentyfikowanie przyczyny). Wyniki przesłać w formie raportu (pull request do folderu PD).
+Termin: 31 marca
 
-Journale do wybioru. Mozna wziąć artykuły z jednego lub kilku.
+Oddanie pracy domowej: indywidualnie
+
+Spróbować zreprodukować co najmniej trzy wybrane artykuły naukowe (5 pkt. + 2 pkt. za znalezienie niereprodukowalnego i zidentyfikowanie przyczyny). Wyniki przesłać w formie raportu (pull request do folderu PD). Polecam napisanie raportu w języku angielskim, będzie to pomocne, gdyż projekt będzie artykułem naukowym w języku angielskim.
+
+Warto już teraz zastanowić się nad konkretym zagadnieniem poruszanym w projekcie i pod tym kątem wybrać artykuły do zreprodukowania.
+
+
+Journale do wyboru. Mozna wziąć artykuły z jednego lub kilku.
 - [The R Journal](https://journal.r-project.org/)
 - [Machine Learning Open Source Software in Journal of Machine Learning Research](http://www.jmlr.org/mloss/)
 - [Journal of Computational and Graphical Statistics](https://www.tandfonline.com/toc/ucgs20/current)
 - [Journal of Statistical Software](https://www.jstatsoft.org/article/view/v083i11)
 
 ### Praca Domowa II (3 pkt.)
-Założenie podrozdziału odpowiadającego artykułowi, który powstanie w ramach projektu. Wybrać deskryptywny tytuł artykułu.
+Termin: 7.04.2020
+
+Oddanie pracy domowej: cała grupa
+
+tl;dr
+
+Mamy już repozytorium z [ebookiem](https://github.com/mini-pw/2020L-WB-Book), w którym będziemy umieszczać artykuły. 
+W tym tygodniu zadaniem jest założenie podrozdziału odpowiadającego artykułowi, który powstanie w ramach projektu. 
+Zależy mi, żeby podrozdział zawierał autorów oraz deskryptywny tytuł, odpowiadający temu o czym chcielibyście napisać. Jeśli w trakcie wykonywania projektu zmieni się koncepcja, to tytuł oczywiście można potem zmienić.
+
+
+
+#### Jak dodać swój rozdział?
+
+Książka będzie służyć do artykułów wszystkich grup robiących Warsztaty Badawcze I i Warsztaty Badawcze II. Z tego powodu podzielona jest na 3 rozdziały, pierwszy z nich odpowiada naszym projektom o reprodukowalności.
+
+- Pliki zaczynające się od 1-0, 2-0, 3-0 to wstępy do rozdziałów, które uzupełnię ja i pozostałe prowadzące.
+
+- Pliki zaczynające się od 1-1. 1-2, 1-3, ... to podrozdziały, które powinny odpowiadać grupom. Przykładowy plik to `1-1-example-article.Rmd`. Na jego podstawie stwórzcie Wasze pliki z podrozdziałami. Taki plik powinien zawierać co najmniej tytuł i autorów. Mile widziany jest też szkielet artykułu, czyli nagłówki (mogą być identyczne jak w pliku z przykładem). Sam artykuł polecam pisać w czystym Markdownie, nie trzeba używać żadnych komend z R.
+
+- Istotne jest, że najwyższy stopień nagłówka w plikach z artykułami to ##, dzięki temu będą one podrozdziałami dla pliku `1-0-reproducibility.Rmd` gdzie jest nagłówek wyżej, czyli z jednym #. Przy pull requestach, proszę, pilnujcie zagnieżdżeń tych nagłówków, żeby nam się struktura nie rozjechała :).
+
+- Robiąc pull request z pracą domową zacznijcie jego nazwę od REPR. Dzięki temu łatwiej mi będzie wyłapywać PR dotyczce naszego projektu. **W PR powinien zostać dodany tylko jeden plik `.Rmd`, bez renderowania książki na nowo.**
+
+
+#### Jak lokalnie podejrzeć czy rozdział dobrze się renderuje?
+
+Książka utworzona jest pakietem R `bookdown` i tym też pakietem można ją wyrenderować. 
+W tym celu trzeba:
+
+1) Sklonować lub pobrać repozytorium https://github.com/mini-pw/2020L-WB-Book 
+
+2) Zainstalować zależności
+
+```
+devtools::install_dev_deps()
+```
+
+3) Wyrenderować książkę do HTML
+```
+bookdown::render_book('./', 'bookdown::gitbook')
+```
+Pliki z książką znajdują się w folderze docs, żeby ją podejrzeć można otworzyć plik `docs/index.html`
+
+Lub do PDF
+```
+bookdown::render_book('./', 'bookdown::pdf_book')
+```
 
 ### Praca Domowa III (5 pkt.)
-Napisać Related Work artykułów dotyczących reprodukowalności.
-Umieścić Related Work w książce w odpowiednim artykule.
+Termin: 21.04.2020
+
+Oddanie pracy domowej: cała grupa
+
+Napisać wstęp artykułu. Może to być jedna sekcja nazwana Introduction/Motivation albo dwie sekcje, gdzie pierwsza jest nazwana Introducition/Motivation a druga Related Work. Wybór pozostawiam autorom artykułu.
+
+Te sekcje powinna zawierać co najmniej:
+
+- 2-3 zdania wprowadzenia do tematu, na przykład dlaczego reprodukowalność jest ważna, czy to problem nauki czy biznesu, o jaką reprodukowalność chodzi. Można odwołać się do pojęcia długu technologicznego.
+
+- Zdefiniować reprodukowalność. Najlepiej powołując się na definicję z innego artykułu. Można skorzystać z artykułów umieszczonych w [prezenacji z drugich zajęć](https://github.com/mini-pw/2020L-WarsztatyBadawcze-Reprodukowalnosc/blob/master/Laboratoria/2020_03_03/Prezentacja.pdf).
+
+- Opis kilku prac dotyczących reprodukowalności (po 1-3 zdania na każdą pracę), przykładowe artykuły, które można cytować są w prezentacji wymienionej wyżej i w README przedmiotu. Gorąco zachęcam do własnych poszukiwań, na przykład wpisując słowa kluczowe w [Google Scholar](https://scholar.google.com/) lub [arXiv](https://arxiv.org/). Dobrą kopalnią źródeł jest też przeglądanie, jakie inne prace cytują autorzy artykułów o reprodukowalności. 
+
+- Można  odwołać się do tego, że różne rzeczy mogą być reprodukowalne (kod, wyniki analiz, sposób zbierania danych), ale artykuł skupia się na jednym z tych aspektów. Chyba że skupia się na większej ich liczbie :)
+
+- Idealnie byłoby umieścić 2-3 zdania informujące jak do istniejących badań dotyczących reprodukowalności ma się ten artykuł i co nowego wnosi. Przykłady: 
+	- nikt do tej pory nie zbadał tego zagadnienia, 
+	- ktoś zbadał to zagadnienie, ale 10 lat temu i chcemy zobaczyć czy wyniki będą podobne teraz,
+	- ktoś zbadał to zagadnienie ale dla innego języka lub czasopisma
+	- ktoś zrobił podobne badanie ale na mniejszą skalę
+    - ktoś zrobił podobne badanie, ale my skupiamy się tylko na artykułach dotyczących pakietów na bazie ggplot2, chcemy zobaczyć jak polscy autorzy wypadają na tle innych.
+	- ...
+
+- wszelki wkład ponad to co wymieniłam wyżej jest bardzo mile widziany.
+
+Pracując później nad resztą artykułu oczywiście będzie można zmieniać ten wstęp, ale na potrzeby pracy domowej będzie oceniony w wersji z 21 kwietnia.
+
+- Robiąc pull request z pracą domową zacznijcie jego nazwę od REPR. Dzięki temu łatwiej mi będzie wyłapywać PR dotyczce naszego projektu. **W PR powinien zostać dodany tylko jeden plik `.Rmd`, bez renderowania książki na nowo.** Natomiast zachęcam do wyrenderwoania rozdziałów u siebie lokalnie w celu sprawdzenia, że tekst (w szczególności cytowania) dobrze się generuje.
+
+
+#### Jak cytować w ebooku?
+
+[Repozytorium z ebookiem](https://github.com/mini-pw/2020L-WB-Book)
+
+Cytować będziemy używając formatu [BibTeX](http://www.bibtex.org/).
+Informacje o cytowanych artykułach trzeba umieścić w pliku `book.bib` znajdującym się w repozytorium z książką. Są tam przykładowe prace w formacie BiBTex. 
+
+Zazwyczaj na stronie czasopisma da się wygenerować taki plik BiBteXowy dla artykułu, czasem jest to dosyć ukryte, najlepiej szukać przycisku z napisem "citation". Gdyby się nie udało polecam poszukać numeru doi artykułu i skorzystać ze strony [doi2bib](https://www.doi2bib.org/).
+
+Kiedy uda się umieścić artykuł w pliku `book.bib` odwoływać się do prac można przez `[@nazwa]`, gdzie nazwa to ciąg znaków z pierwszego pola z BiBteXa. Przykład użycia jest w pliku `index.Rmd` (cytowanie rlang).
+
 
 ## Projekt (55 pkt.)
 
@@ -100,7 +194,7 @@ Wynikiem projektu powinien być krótki artykuł naukowy (40 pkt.), minimum 3 st
 
 Podział punktów w ramach artykułu
 - Abstrakt: 5 pkt.
-- Introduction + Motivation: 10 pkt
+- Introduction + Motivation: 10 pkt.
 - Opis metodologii i wyników: 15 pkt. (oddanie po 5.05.2020 max 10 pkt.)
 - Wnioski: 10 pkt.
 

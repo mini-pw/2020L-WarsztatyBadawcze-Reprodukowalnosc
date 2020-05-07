@@ -1,0 +1,268 @@
+---
+title: "Homework 1"
+author: "Ngoc Anh Nguyen"
+date: "3/31/2020"
+output: html_document
+---
+This raport contains the results of research on repreduction of 3 articles about R packages:`TP.idm`, `InfoTrad` and `picasso`.
+
+_____________________
+
+## 1) `TP.idm`package:  Probabilities for the Illness-Death Model
+
+The [article](https://www.jstatsoft.org/article/view/v083i10/v83i10.pdf) can be found in Journal of Statistical Software. The package is available from the Comprehensive R Archive Network,  [CRAN](https://cran.r-project.org/web/packages/TP.idm/index.html)
+
+**Short description**
+
+*An R package by Vanesa Balboa and Jacobo de Uña-Álvarez from Universidade de Vigo to compute an empirical transition probability matrix for the illness-death model.  This package implements a novel non-parametric estimator which is particularly well suited for non-Markov processes observed under right censoring. Variance estimates and confidence limits are also implemented inthe package.*
+
+**Installation**
+```{r eval=FALSE}
+install.packages("TP.idm")
+```
+The installation was successful and very fast.
+
+**Application to real data**
+
+There was a section in the article to illustrate how to use the functions available in the package TP.idm. Our task was to reproduce the results of any code chunk and generate visualisations as the ones presented.
+
+```{r}
+
+#setting mirrors
+options(repos=structure(c(CRAN="https://cran.cnr.berkeley.edu/")))
+
+data("colonTP", package = "TP.idm")
+colonTP[1:6, 1:5]
+
+library(TP.idm)
+nm01 <- TPidm(colonTP, s = 0, t = 365)
+nm01
+
+# figure 1
+plot(nm01)
+
+nm01$all.probs[seq(1, 194, length.out = 5), 1, ]
+
+nm01$all.probs[nm01$times == 122, 1:4, ]
+
+nm02 <- TPidm(colonTP, s = 0, t = 730)
+nm12 <- TPidm(colonTP, s = 365, t = 730)
+nm02
+nm12
+
+plot(nm02)
+plot(nm12)
+
+# figure 2
+plot(nm12, chosen.tr = c("1 3", "2 3"))
+
+nm0t_rx <- TPidm(colonTP, s = 0, cov = "rx")
+nm0t_rx
+
+# figure 3
+plot(nm0t_rx, chosen.tr = c("1 1"), col = 1:3)
+legend(0, 0.2, legend = c("Obs", "Lev", "Lev+5FU"), lty = 1, col = 1:3)
+
+# figure 4
+plot(nm0t_rx, chosen.tr = c("1 3"), col = 1:3)
+legend(0, 1, legend = c("Obs", "Lev", "Lev+5FU"), lty = 1, col = 1:3)
+
+# figure 5
+test.nm(colonTP[colonTP$rx == "Obs", ], s = 365)
+
+colonTP$entrytime <- colonTP$time1
+
+install.packages("survival")
+library(survival)
+coxph(Surv(time1, Stime, event) ~ entrytime, data = colonTP[colonTP$time1 < colonTP$Stime & colonTP$rx == "Obs", ])
+
+# figure 6
+plot(TPidm(colonTP[colonTP$rx == "Obs",], s = 365), chosen.tr = c("2 2"))
+aj1t.Obs <- TPidm(colonTP[colonTP$rx == "Obs",], s = 365, method = "AJ")
+lines(aj1t.Obs$times, aj1t.Obs$all.probs[ , 1, 4], type = "s", col = 2)
+```
+
+**Results**
+
+This article's code outputs and charts are 100% reproducible.
+
+___________________________________________________
+## 2)  `InfoTrad`: : An R package for estimating the probability of informed trading
+
+The [article](https://journal.r-project.org/archive/2018/RJ-2018-013/index.html) can be found in R Journal.
+
+**Short description**
+
+The R package InfoTrad provides five different functions: 
+ - `EHO()`, 
+ - `LK()`, 
+ - `YZ()`, 
+ - `GAN()`, 
+ - `EA()`. 
+ 
+ *The first two functions provide likelihood specifications whereas the last three functions can be used to obtain parameter estimates for Θ to calculate PIN in equation (3). All five functions require a data frame that contains Bt in the first column, and St in the second column. We create Bt and St for ten hypothetical trading days.*
+
+**Installation**
+```{r eval=FALSE}
+install.packages("InfoTrad")
+```
+The installation was successful and very fast.
+
+**Sample data**
+```{r}
+library(InfoTrad)
+# Sample Data
+Buy<-c(350,250,500,552,163,345,847,923,123,349)
+Sell<-c(382,500,463,550,200,323,456,342,578,455)
+data=cbind(Buy,Sell)
+
+# Initial parameter values
+# par0 = (alpha, delta, mu, epsilon_b, epsilon_s)
+par0 = c(0.5,0.5,300,400,500)
+```
+
+### `EHO()` function
+
+```{r warning=FALSE}
+
+# Call EHO function
+EHO_out = EHO(data)
+model = optim(par0, EHO_out, gr = NULL, method = c("Nelder-Mead"), hessian = FALSE)
+
+## Parameter Estimates
+model$par[1] # Estimate for alpha
+model$par[2] # Estimate for delta
+model$par[3] # Estimate for mu
+model$par[4] # Estimate for eb
+model$par[5] # Estimate for es
+
+## Estimate for PIN
+(model$par[1]*model$par[3])/((model$par[1]*model$par[3])+model$par[4]+model$par[5])
+
+```
+Estimates differ.
+
+
+
+
+### `LK()` function
+```{r warning=FALSE}
+
+# Call LK function
+LK_out = LK(data)
+model = optim(par0, LK_out, gr = NULL, method = c("Nelder-Mead"), hessian = FALSE)
+
+## The structure of the model output 
+model
+
+model$par[1] # Estimate for alpha
+model$par[2] # Estimate for delta
+model$par[3] # Estimate for mu
+model$par[4] # Estimate for eb
+model$par[5] # Estimate for es
+
+## Estimate for PIN
+(model$par[1]*model$par[3])/((model$par[1]*model$par[3])+model$par[4]+model$par[5])
+
+```
+Estimates differ.
+
+### `YZ()` function
+
+```{r}
+
+# Parameter estimates using the LK factorization of Lin and Ke (2011)
+# with the algorithm of Yan and Zhang (2012).
+# Default factorization is set to be "LK"
+result=YZ(data)
+print(result)
+
+
+# Parameter estimates using the EHO factorization of Easley et. al. (2010)
+# with the algorithm of Yan and Zhang (2012).
+result=YZ(data,likelihood="EHO")
+print(result)
+
+```
+The results are identical as in article.
+
+### `GAN()` function
+```{r}
+# Parameter estimates using the LK factorization of Lin and Ke (2011)
+# with the algorithm of Gan et. al. (2015).
+# Default factorization is set to be "LK"
+result=GAN(data)
+print(result)
+
+
+# Parameter estimates using the EHO factorization of Easley et. al. (2010)
+# with the algorithm of Gan et. al. (2015)
+result=GAN(data, likelihood="EHO")
+print(result)
+
+```
+
+The results are identical as in article.
+
+### `EA()` function
+
+```{r}
+# Parameter estimates using the LK factorization of Lin and Ke (2011)
+# with the modified clustering algorithm of Ersan and Alici (2016).
+# Default factorization is set to be "LK"
+result=EA(data)
+print(result)
+
+# Parameter estimates using the EHO factorization of Easley et. al. (2010)
+# with the modified clustering algorithm of Ersan and Alici (2016).
+result=EA(data,likelihood="EHO")
+print(result)
+```
+
+The results are identical as in article.
+
+**Results**
+First two functions' output (EHO and LK) were different from article.
+
+*"We define EHO() and LK() as simple likelihood specifications rather than functions that execute the MLE procedure. This is due to the fact that MLE estimators vary depending on the optimization procedure. Users who wish to develop alternative estimation techniques, based on the proposed likelihood factorization, can use EHO() and LK(). This is the underlying reason why those functions do not have built-in optimization procedures."*
+
+___________________________________________________
+
+## 3) `picasso` package 
+
+
+The [article](http://www.jmlr.org/papers/volume20/17-722/17-722.pdf) can be found in Journal of Machine Learning Research. More details can be found in [Github page](https://github.com/jasonge27/picasso).
+
+
+**Short description**
+
+*The library by Jason Ge, Xingguo Li, Haoming Jiang, Han Liu, Tong Zhang, Mengdi Wang Tuo Zhao implements a unified framework of pathwise coordinate optimization for a variety of sparse learning problems (e.g., sparse linear regression, sparse logistic regression, sparse Poisson regression and scaled sparse linear regression) combined with efficient active set selection strategies.*
+
+
+**Installation**
+```{r eval=FALSE}
+install.packages("picasso")
+```
+The installation was successful abd very fast.
+
+
+**Example of R User Interface**
+
+
+```{r}
+library(picasso); 
+
+# Load the data set
+data(eyedata) 
+# Lasso
+out1 = picasso(x,y,method="l1",type.gaussian="naive",nlambda=20, lambda.min.ratio=0.2) 
+# MCP regularizer
+out2 = picasso(x,y,method="mcp", gamma = 1.25, prec=1e-4) 
+
+# Plot solution paths
+plot(out1)
+plot(out2) 
+```
+
+**Results**
+The output is 100% reproducible.
