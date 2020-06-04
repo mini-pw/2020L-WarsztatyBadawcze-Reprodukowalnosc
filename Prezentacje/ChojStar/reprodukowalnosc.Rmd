@@ -1,0 +1,33 @@
+---
+title: "Reprodukowalność"
+author: "Przemysław Chojecki, Kacper Staroń"
+date: "21 03 2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Reprodukowalność artukułu
+W trakcie reprodukcji artykułu naukowego natrafiliśmy na problemy ze zrozumieniem czym dokładnie jest reprodukowalność.\
+
+
+### Wnioski niekontrowersyjne
+Wszystkie kody udostępnione przez autorów artykułu działały na najnowszych wersjach oprogramowania zgodnie z oczekiwaniami. Wyniki ich działania pokrywały się z opisem w artykule z paroma wyjątkami:
+1. Obrazek zatytułowany `Figure 13` w artykule miał sub-plota ilości rekordów `V`/`AP` w postaci heatmapy. Dokładnie ten sam rezultat udało nam się osiągnąć na maszynie z systemem operacyjnym Unix, jednakże inaczej było na maszynach z Windowsami. Jeden z trzech komputerów z Windowsem wyświetlał poprawnie heatmapę, jednakże pozostałe 2 przetestowane maszyny zamiast niej pokazywały nieczytelnego scatter plota.\
+2. Nie udało nam się odtworzyć obrazka `Figure 15` ze względu na to, że aby to się udało w tym konkretnym przypadku dobierane ręcznie parametry myszą być wybrane z ogromną precyzją, co jest trudne ze względu na naturę narzędzia. Jednakże bardzo podoby wynik został osiągnięty.\
+
+
+### Komentarze kontrowersyjne
+Wszystkie pokazane w artykule grafiki przedstawiające działanie pakietu `condvis` mają ręcznie ustawione parametry, których dokładne odtworzenie jest niemożliwe. Możliwe jest jednak odtoworzenie ich z pewną precyzją, co, łącząc z ciągłością wizualizowanego modelu, pozwala nam na uzyskanie grafik bardzo podobnych do tych użytych w artykule. Taka sytuacja nie nastąpiła przy próbie odtworzenia obrazka `Figure 15`, gdyż reprezentowany na nim model(`random forest`) jest modelem nieciągłym. Stworzenie więc nawet trochę podobnej grafiki jest w tym przypadku dużo trudniejsze niż w innych. Nie zmienia to jednak faktu, że żaden z obrazków w artykule prezentujących modele nie jest możliwy do zreprodukowania co do pixela ze względu na ograniczoną dokładność w wyborze parametrów, jakie daje nam narzędzie.\
+
+
+### Wnioski
+Czy artykuł jest reprodukowalny?\
+Pomijając kwestię pojedynczego wykresu różniącego się w zależności od systemu operacyjnego, trudno powiedzieć. Z jednej strony kody umieszczone przez autorów dają wyniki poprawne, a po krótkim dostrajaniu parametrów wizualizacji podobne do tych osiągniętych przez autorów, to jednak nigdy nie idealne ze względu na niedokładność narzędzia.
+
+

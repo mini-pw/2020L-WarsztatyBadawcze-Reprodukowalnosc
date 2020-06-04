@@ -1,0 +1,638 @@
+---
+title: "Homework 1."
+author: "Michał Wdowski"
+output: html_document
+---
+
+## Introduction
+
+The subject of this homework is to check **reproducibility** of three chosen scientific papers somehowe related to R language.
+
+## [atable: Create Tables for Clinical Trial Reports](https://journal.r-project.org/archive/2019/RJ-2019-001/index.html)
+##### *by Armin Ströbel*
+
+The linked site of the article has a hyperlink that allows users do download supplementary materials. In the downloaded package there is a single script with all the code used in the original paper, however, lines of code in the paper are formated well enough that they can be copied directly to R IDE.
+
+```{r}
+# library ####
+library(atable)
+library(multgee)
+library(survival)
+```
+
+```{r}
+# Set classes of dataset arthritis ####
+data(arthritis)
+
+arthritis = within(arthritis, {
+  score = ordered(y)
+  baselinescore = ordered(baseline)
+  time = paste0("Month ", time)
+  sex = factor(sex, levels = c(1,2), labels = c("female", "male"))
+  trt = factor(trt, levels = c(1,2), labels = c("placebo", "drug"))})
+```
+
+```{r}
+# Apply atable: Demographics of dataset arthritis ####
+the_table <- atable::atable(subset(arthritis, time=="Month 1"),
+                            target_cols = c("age", "sex", "baselinescore"),
+                            group_col = "trt")[1:3]
+
+Hmisc::latex(the_table,
+             file = "",
+             title = "",
+             label = "tab:arthritisDemographics",
+             caption = "Demographics of dataset arthritis.",
+             caption.lot = "Demographics of dataset arthritis",
+             rowname = NULL,
+             where = "!htbp",
+             booktabs = TRUE,
+             multicol = FALSE )
+```
+
+```{r}
+# Apply atable: Hypothesis tests of dataset arthritis ####
+the_table <- atable::atable(score ~ trt | time, arthritis)
+
+
+Hmisc::latex(the_table,
+             file = "",
+             title = "",
+             label = "tab:arthritisHypothesisTests",
+             caption = "Hypothesis tests of dataset arthritis.",
+             caption.lot = "Hypothesis tests of dataset arthritis",
+             rowname = NULL,
+             where = "!htbp",
+             booktabs = TRUE,
+             multicol = FALSE)
+```
+
+```{r}
+# Define replacement functions ####
+
+new_two_sample_htest_numeric <- function(value, group, ...){
+
+  d <- data.frame(value = value, group = group)
+  group_levels <- levels(group)
+  x <- subset(d, group %in% group_levels[1], select = "value", drop = TRUE)
+  y <- subset(d, group %in% group_levels[2], select = "value", drop = TRUE)
+
+  ks_test_out <- stats::ks.test(x, y)
+  t_test_out <- stats::t.test(x, y)
+
+  out <- list(p_ks = ks_test_out$p.value,
+              p_t = t_test_out$p.value )
+
+  return(out)
+}
+```
+
+```{r}
+new_statistics_numeric <- function(x, ...){
+
+  statistics_out <- list(Median = median(x, na.rm = TRUE),
+                         MAD = mad(x, na.rm = TRUE),
+                         Mean = mean(x, na.rm = TRUE),
+                         SD = sd(x, na.rm = TRUE))
+
+  class(statistics_out) <- c("statistics_numeric", class(statistics_out))
+  # We will need this new class later to specify the format
+  return(statistics_out)
+}
+```
+
+```{r}
+new_format_statistics_numeric <- function(x, ...){
+
+  Median_MAD <- paste(round(c(x$Median, x$MAD), digits = 1), collapse = "; ")
+  Mean_SD <- paste(round(c(x$Mean, x$SD), digits = 1), collapse = "; ")
+
+  out <- data.frame(
+    tag = factor(c("Median; MAD", "Mean; SD"), levels = c("Median; MAD", "Mean; SD")),
+    # the factor needs levels for the non-alphabetical order
+    value = c(Median_MAD, Mean_SD),
+    stringsAsFactors = FALSE)
+  return(out)
+}
+```
+
+```{r}
+# Replace two_sample_htest.numeric in atable's namespace
+utils::assignInNamespace(x = "two_sample_htest.numeric",
+                         value = new_two_sample_htest_numeric,
+                         ns = "atable")
+```
+
+```{r}
+# set statistics.numeric in atable_options
+atable_options('statistics.numeric' = new_statistics_numeric)
+```
+
+```{r}
+# Apply atable with replaced methods ####
+the_table <- atable(age ~ trt, arthritis,
+                    format_statistics.statistics_numeric = new_format_statistics_numeric)
+
+
+Hmisc::latex(the_table,
+             file = "",
+             title = "",
+             label = "tab:modifynumeric",
+             caption = "Modified atable now calculates the median, MAD, t-test and KS-test for numeric variables.
+               The median is greater than the mean in both the drug and placebo group, which indicates a skewed distribution of age.
+              Additionally the KS-test is significant, while the t-test is not.",
+             caption.lot = "Modified atable",
+             rowname = NULL,
+             where  ="!htbp",
+             booktabs = TRUE,
+             multicol = FALSE)
+```
+
+```{r}
+# atable on empty data frames with placeholders ####
+
+# create empty data.frame with non-empty column names
+E <- atable::test_data[FALSE, ]
+
+stats_placeholder <- function(x, ...){
+
+  return(list(Mean = "X.xx",
+              SD = "X.xx"))
+}
+
+the_table <- atable::atable(E, target_cols = c("Numeric", "Factor"),
+                            statistics.numeric = stats_placeholder)
+
+Hmisc::latex(the_table,
+             file = "",
+             title = "",
+             label = "tab:empty df and placeholder",
+             caption = "atable applied to an empty data frame with placeholder statistics for numeric variables. The placeholder-function is applied to the numeric variable, printing X.xx in the table. The empty factor variable is summarized in the same way as non-empty factors: by returning percentages and counts; in this case yielding 0/0 = NaN percent and counts of 0 in every category, as expected. Note, that the empty data frame still needs non-empty column names.",
+             caption.lot = "atable applied to an empty data frame with placeholder statistics",
+             rowname = NULL,
+             where = "!htbp",
+             booktabs = TRUE,
+             multicol = FALSE)
+```
+
+```{r}
+# Add new methods for class surv ####
+
+
+statistics.Surv <- function(x, ...){
+
+  survfit_object <- survival::survfit(x ~ 1)
+
+  # copy from survival:::print.survfit:
+  out <- survival:::survmean(survfit_object, rmean = "common")
+
+  return(list(mean_survival_time = out$matrix["*rmean"],
+              SE = out$matrix["*se(rmean)"]))
+}
+
+two_sample_htest.Surv <- function(value, group, ...){
+
+
+  survdiff_result <- survival::survdiff(value~group, rho=0)
+
+  # copy from survival:::print.survdiff:
+  etmp <- survdiff_result$exp
+  df <- (sum(1 * (etmp > 0))) - 1
+  p <- 1 - stats::pchisq(survdiff_result$chisq, df)
+
+  return(list(p = p,
+              stat = survdiff_result$chisq))
+}
+```
+
+```{r}
+# Set classes of dataset ovarian ####
+
+ovarian <- within(survival::ovarian, {
+  time_to_event = survival::Surv(futime, fustat)})
+
+# Apply atable with new methods ####
+the_table <- atable(ovarian, target_cols = c("time_to_event"), group_col = "rx")
+
+Hmisc::latex(the_table,
+            file = "",
+            title = "",
+            label = "tab:ovarianHypothesisTests",
+            caption = "Hypothesis tests of dataset ovarian.",
+            caption.lot = "Hypothesis tests of dataset ovarian",
+            rowname = NULL,
+            where = "!htbp",
+            booktabs = TRUE,
+            multicol = FALSE)
+```
+
+A problem occured with the display od the results. Original paper probably used rnw, not rmd, because output generated, whuch was supposed to be a neat-looking table, is instead a block of Latex code. My attempts to generate it as a table in rmd - deletinmg the parts of code with latex() and atable() functions - were unsuccessful. It seems like there is some data processing as well as table converting being done at once. Nevertheless, the results is the first table seem to be the same as in the original article, but it was quite uncomfortable to search for the right columns and rows in a block of Latex code.
+
+Likewise, copying the code into rnw didn't work. I guess the right method is to copy and the Latex code and paste it directly into the document.
+
+
+## [Estimation of Transition Probabilities for the Illness-Death Model: Package TP.idm](https://www.jstatsoft.org/article/view/v083i10)
+##### *by Vanesa Balboa, Jacobo de Uña-Álvarez*
+
+This article also has a downloadable script to be reproduced.
+
+```{r}
+
+
+################################################################################
+### 4. Application to real data
+################################################################################
+
+library("TP.idm")
+data("colonTP", package = "TP.idm")
+colonTP[1:6, 1:5]
+```
+
+```{r}
+
+nm01 <- TPidm(colonTP, s = 0, t = 365)
+nm01
+```
+
+```{r}
+
+plot(nm01)
+```
+
+```{r}
+
+nm01$all.probs[seq(1, 194, length.out = 5), 1, ]
+```
+
+```{r}
+nm01$all.probs[nm01$times == 122, 1:4, ]
+```
+
+```{r}
+
+nm02 <- TPidm(colonTP, s = 0, t = 730)
+nm12 <- TPidm(colonTP, s = 365, t = 730)
+nm02
+```
+
+```{r}
+nm12
+```
+
+```{r}
+
+plot(nm12, chosen.tr = c("1 3", "2 3"))
+```
+
+```{r}
+
+nm0t_rx <- TPidm(colonTP, s = 0, cov = "rx")
+nm0t_rx
+```
+
+```{r}
+
+plot(nm0t_rx, chosen.tr = c("1 1"), col = 1:3)
+legend(0, 0.2, legend = c("Obs", "Lev", "Lev+5FU"), lty = 1, col = 1:3)
+```
+
+```{r}
+
+plot(nm0t_rx, chosen.tr = c("1 3"), col = 1:3)
+legend(0, 1, legend = c("Obs", "Lev", "Lev+5FU"), lty = 1, col = 1:3)
+```
+
+```{r}
+
+test.nm(colonTP[colonTP$rx == "Obs", ], s = 365)
+```
+
+```{r}
+
+library("survival")
+
+colonTP$entrytime <- colonTP$time1
+coxph(Surv(time1, Stime, event) ~ entrytime,
+      data = colonTP[colonTP$time1 < colonTP$Stime & colonTP$rx == "Obs", ])
+```
+
+```{r}
+
+plot(TPidm(colonTP[colonTP$rx == "Obs", ], s = 365), chosen.tr = c("2 2"))
+aj1t.Obs <- TPidm(colonTP[colonTP$rx=="Obs", ], s = 365, method = "AJ")
+lines(aj1t.Obs$times, aj1t.Obs$all.probs[, 1, 4], type = "s", col = 2)
+```
+
+```{r}
+
+################################################################################
+### 5. Discussion
+################################################################################
+### Compare computation times, TPidm() vs. etmprep() + etm().
+### - colonTP data
+### - continuous data
+### - grouped or rounded data
+################################################################################
+
+## Allowed transitions
+tra <- matrix(FALSE, 3, 3)
+tra[1, 2:3] <- TRUE
+tra[2, 3] <- TRUE
+
+## Event times
+timeG <- c(NA, "time1", "Stime")
+
+## Event indicators
+statusG <- c(NA, "intermediate_event", "event")
+
+## Naming the states
+state.namesG <- c("state0", "state1", "EXITUS")
+
+AddIntermediateEvent <- function(data) {
+    intermediate_event <- data$event1
+    intermediate_event[data$event1 == 1 & data$event == 1 & data$time1 == data$Stime] <- 1
+    intermediate_event[data$event1 == 0 | data$time1 == data$Stime] <- 0
+    data$intermediate_event <- intermediate_event
+    data
+}
+
+################################################################################
+## colonTP data
+################################################################################
+data("colonTP", package = "TP.idm")
+```
+
+```{r}
+data <- colonTP
+
+library("TP.idm")
+print(system.time(TPidm(data, s = 365, method = "AJ", CI = TRUE)))
+```
+
+```{r}
+
+data <- AddIntermediateEvent(data)
+keepG <- c("event", "Stime", "rx")
+
+library("etm")
+print(system.time({
+    dG <- etmprep(timeG, statusG, data = data, tra, state.namesG, start = NULL, id = NULL, cens.name = "cens", keepG)
+    etm(dG, state.namesG, tra, cens.name = "cens", s = 365, t = "last", covariance = TRUE)
+}))
+```
+
+```{r}
+
+################################################################################
+## continuous data
+################################################################################
+for (n in c(929, 465, 233)) {
+    cat("n = ", n, "\n")
+    set.seed(31032017)
+    T12 <- rexp(n, rate = 1)
+    T13 <- rexp(n, rate = 1)
+    time1.0 <- pmin(T12, T13)
+    T23 <- rexp(n, rate = 2)
+    Stime.0 <- time1.0 + T23 * as.numeric(T12 <= T13)
+    C <- runif(n, 0, 2)
+    event1 <- as.numeric(time1.0 <= C)
+    time1 <- pmin(time1.0, C)
+    event <- as.numeric(Stime.0 <= C)
+    Stime <- pmin(Stime.0, C)
+
+    data <- data.frame(time1, event1, Stime, event)
+
+    library("TP.idm")
+    print(system.time(TPidm(data, s = quantile(time1, probs = .15),
+                            method = "AJ", CI = TRUE)))
+
+    data <- AddIntermediateEvent(data)
+    keepG <- c("event", "Stime")
+    
+    library("etm")
+    print(system.time({
+        dG <- etmprep(timeG, statusG, data = data, tra, state.namesG,
+                      start = NULL, id = NULL, cens.name = "cens", keepG)
+        etm(dG, state.namesG, tra, cens.name = "cens",
+            s = quantile(time1, probs = .15), t = "last", covariance = TRUE)
+    }))
+}
+```
+
+```{r}
+
+################################################################################
+## grouped or rounded data
+################################################################################
+for (n in c(929, 465, 233)) {
+    cat("n = ", n, "\n")
+    set.seed(31032017)
+    T12 <- round(rexp(n, rate = 1), 2)
+    T13 <- round(rexp(n, rate = 1), 2)
+    time1.0 <- pmin(T12, T13)
+    T23 <- round(rexp(n, rate = 2), 2)
+
+    ## To ensure entry time < exit time (so the warning of etm package
+    ## is avoided).
+    v <- min(time1.0[time1.0 > 0])
+    u <- min(T23[T23 > 0])
+    x <- min(u, v)
+    time1.0 <- time1.0 + x/2
+    T23 <- T23 + x/2
+
+    Stime.0 <- time1.0 + T23 * as.numeric(T12 <= T13)
+
+    C <- round(runif(n, 0, 2), 2)
+    C <- C + x/2
+
+    event1 <- as.numeric(time1.0 <= C)
+    time1 <- pmin(time1.0, C)
+
+    event <- as.numeric(Stime.0 <= C)
+    Stime <- pmin(Stime.0, C)
+
+    data <- as.data.frame(cbind(time1, event1, Stime, event))
+
+    library("TP.idm")
+    print(system.time(TPidm(data, s = quantile(time1, probs = .15),
+                            method = "AJ", CI = TRUE)))
+
+    data <- AddIntermediateEvent(data)
+    keepG <- c("event", "Stime")
+
+    library("etm")
+    print(system.time({
+        dG <- etmprep(timeG, statusG, data = data, tra, state.namesG,
+                      start = NULL, id = NULL, cens.name = "cens", keepG)
+        etm(dG, state.namesG, tra, cens.name = "cens",
+            s = quantile(time1, probs = .15), t = "last", covariance = TRUE)
+    }))
+}
+```
+
+That article is almost flawlessly reproducible, if you ignore the proprotions of plots and some additional code in the attached script.
+
+## [Estimation of Transition Probabilities for the Illness-Death Model: Package TP.idm](https://www.jstatsoft.org/article/view/v083i10)
+##### *by Vanesa Balboa, Jacobo de Uña-Álvarez*
+
+For some reason there was a problem with installation of one of libraries, because it had a cnoflict with Java 11 installer. If you are able to fix this problem, then you may finally use the code provided by authors.
+
+```{r, warning=FALSE}
+
+#################
+# preliminaries #
+#################
+
+library("EMMIXcskew")
+library("EMMIXskew")
+set.seed(1)
+
+###############################################
+# Fitting a CFUST distribution - section 4.2  #
+###############################################
+
+data("iris", package = "datasets")
+iris.versicolor <- subset(iris, Species == "versicolor",
+  c(Sepal.Width, Petal.Length))
+system.time(Fit.versicolor <- fmcfust(1, iris.versicolor, itmax = 10)) # oryginalnie itmax = 100
+summary(Fit.versicolor)
+Fit.versicolor
+```
+
+```{r, warning=FALSE}
+
+###########################################
+# Fitting a FM-CFUST model - section 4.3  #
+###########################################
+
+fit.unrestricted <- fmmst(3, iris[, -5], itmax = 10) # oryginalnie itmax = 100
+fit.iris <- fmcfust(3, iris[, -5], initial = fit.unrestricted, method = "EMMIXuskew", itmax = 10) # oryginalnie itmax = 100
+fit.iris
+summary(fit.iris)
+```
+
+```{r, warning=FALSE}
+
+############################################################
+# Nested cases of the FM-CFUST distribution - section 4.4  #
+############################################################
+
+fit.restricted <- fmcfust(3, iris[, -5], 1, itmax = 10) # oryginalnie itmax = 100
+table(iris$Species, fit.iris$clust)
+table(iris$Species, fit.restricted$clust)
+table(iris$Species, fit.unrestricted$clust)
+error.rate(unclass(iris$Species), fit.iris$clust)
+error.rate(unclass(iris$Species), fit.restricted$clust)
+error.rate(unclass(iris$Species), fit.unrestricted$clust)
+panel1 <- function(x, y, ...) {
+    points(x, y, col = c("red", "green3", "blue")[fit.iris$clust], pch = 20)
+}
+panel2 <- function(x, y, ...) {
+    points(x, y, col = c("red", "green3", "blue")[fit.unrestricted$clust], pch = 20)
+}
+panel3 <- function(x, y, ...) {
+    points(x, y, col = c("red", "green3", "blue")[fit.restricted$clust], pch = 20)
+}
+pairs(iris[1:4], main = "Iris Data", pch = 20, col = c("red","green3","blue")[unclass(iris$Species)], lower.panel = panel1)
+pairs(iris[1:4], main = "Iris Data", upper.panel = panel2, lower.panel = panel3)
+```
+
+```{r, warning=FALSE}
+
+######################################################
+# Random sample from a FM-CFUST model - section 5.1  #
+######################################################
+
+RNGversion("3.1.1"); set.seed(1)
+rcfust(10, c(1, 2), diag(2), matrix(c(2, 1, 1, 2), 2, 2), 4)
+obj <- list()
+obj$mu <- list(c(17, 19), c(5, 22), c(6, 10))
+obj$sigma <- list(diag(2), matrix(c(2, 0, 0, 1), 2), matrix(c(3, 7, 7, 24), 2))
+obj$delta <- list(matrix(c(3, 0, 2, 1.5), 2, 2), matrix(c(5, 0, 0, 10), 2, 2), matrix(c(2, 0, 5, 0), 2, 2))
+obj$dof <- c(1, 2, 3)
+obj$pro <- c(0.25, 0.25, 0.5)
+rfmcfust(3, 100, known = obj)  
+```
+
+```{r, warning=FALSE}                               
+                         
+#######################################################
+# Starting values for a FM-CFUST model - section 5.2  #
+#######################################################
+
+data("geyser", package = "MASS")
+plot(geyser, pch = 20)                        
+initial.default <- init.fmcfust(3, geyser)
+initial.transformation <- init.fmcfust(3, geyser, method = "transformation")
+fit.geyser.restricted <- EmSkew(geyser, 3, "mst", debug = FALSE)
+initial.restricted <- init.fmcfust(3, geyser, initial = fit.geyser.restricted, method = "EMMIXskew")
+fit.geyser.unrestricted <- fmmst(3, geyser, itmax = 10) # oryginalnie itmax = 100
+initial.unrestricted <- init.fmcfust(3, geyser, initial = fit.geyser.unrestricted, method = "EMMIXuskew")
+fit.geyser.t <- EmSkew(geyser, 3, "mvt", debug = FALSE)
+initial.t <- init.fmcfust(3, geyser, initial  = fit.geyser.t, method = "EMMIXskew")                   
+initial.default$loglik
+initial.transformation$loglik
+initial.restricted$loglik
+initial.unrestricted$loglik
+initial.t$loglik                        
+fit.geyser1 <- fmcfust(3, geyser, initial = initial.default, itmax = 10) # oryginalnie itmax = 100
+fit.geyser2 <- fmcfust(3, geyser, initial = initial.t, itmax = 10) # oryginalnie itmax = 100
+fit.geyser3 <- fmcfust(3, geyser, initial = initial.restricted, itmax = 10) # oryginalnie itmax = 100
+fit.geyser1$loglik
+fit.geyser2$loglik
+fit.geyser3$loglik                         
+plot(geyser, pch = 20, col = c("red", "blue", "green")[fit.geyser1$clust])
+plot(geyser, pch = 20, col = c("red", "blue", "green")[fit.geyser2$clust])
+plot(geyser, pch = 20, col = c("red", "blue", "green")[fit.geyser3$clust])
+```
+
+```{r, warning=FALSE}
+
+#######################################################
+# Stopping criteria - section 5.3                     #
+#######################################################
+
+fit.geyser4 <- fmcfust(3, geyser, initial = initial.restricted, convergence = "likelihood")
+fit.geyser5 <- fmcfust(3, geyser, initial = initial.restricted, convergence = "parameters")
+
+#######################################################
+# Selecting g - section 5.4                           #
+#######################################################
+
+fit.geyser.g1 <- fmcfust(1, geyser, itmax = 10) # oryginalnie itmax = 100
+fit.geyser.g2 <- fmcfust(2, geyser, itmax = 10) # oryginalnie itmax = 100
+fit.geyser.g3 <- fit.geyser1   
+fit.geyser.g4 <- fmcfust(4, geyser, itmax = 10) # oryginalnie itmax = 100
+fit.geyser.g1$bic       
+fit.geyser.g2$bic
+fit.geyser.g3$bic 
+fit.geyser.g4$bic
+```
+
+```{r, warning=FALSE}
+ 
+###################################################
+# Visualization of fitted contours - section 5.5  #
+###################################################
+
+fmcfust.contour.2d(iris.versicolor, Fit.versicolor, drawpoints = TRUE,
+                   main = "versicolor", lwd = 2, xlim = c(1.5, 4),
+                   ylim = c(2.5, 5.5), pcol = "black", ccol = "blue")
+```
+
+```{r, warning=FALSE}
+obj <- list()
+obj$mu <- list(matrix(c(0, 0, 0), 3), matrix(c(5, 5, 5), 3))
+obj$sigma <- list(matrix(c(5, 2, 1, 2, 5, 1, 1, 1, 1), 3, 3), 2 * diag(3))
+obj$delta <- list(matrix(c(1, 0, 0, 1, 0, 0, 1, 0, 0), 3, 3),
+                  matrix(c(5, 0, 0, 0, 10, 0, 0, 0, 15), 3, 3))                     
+obj$dof <- c(3, 3)
+obj$pro <- c(0.2, 0.8)
+```
+
+Unfortunately markdown was unable to render 3d plots, so that part can't be reproduced in HTML, altough the plots are well rendered in basic R. Computing, on the other hand, takes a lot of time, so I had to change number of iterations from 100 to 10, thus making the results not entirely exact as in source article. Despite these things, the article seems reproducible.
+
+
+
+
+

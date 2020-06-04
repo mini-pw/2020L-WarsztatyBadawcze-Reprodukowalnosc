@@ -1,0 +1,527 @@
+---
+title: "Homework 1"
+author: "Piotr Sieńko"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    css: style.css
+    code_folding: hide
+---
+
+
+```{r include=FALSE}
+library(factorplot)
+library(car)
+library(nnet)
+library(Ecdat)
+library(trafo)
+library(AssetPricing)
+
+```
+
+<p>&nbsp;</p>
+# 1. Introduction
+<p>&nbsp;</p>
+
+
+In this assignment, we had to try to reproduce 3 scientific articles from given journals. I have focused on packages for linear models and plots.
+
+<p>&nbsp;</p>
+# 2. Article 1 - _Factorplot_ package
+https://journal.r-project.org/archive/2013/RJ-2013-021/
+<p>&nbsp;</p>
+
+First article, titled "factor: Improving Presentation of Simple Contrast in Generalized Linear Models", written by _David A.Armstrong II_ presents package for visualizing hypothesis tests for generalized linear models (GLMs) or multinomial logistic regression models. Let's consider the following example where y is the dependent variable (target) and G = {1, 2,..., m} is a categorical predictor variable which is represented in model as m-1 dummy variables, each showing membership at categories of feature G. 
+
+<div align="center">
+<p>&nbsp;</p>
+
+\newline
+
+$g(\mu_i) = \beta_0 + \beta_1D_{i1} + \beta_2D_{i2} + ... + \beta_{im-1}D_{im-1} + \beta_mX_{i1} + ... + \beta_{m+k}X_{ik} + \varepsilon_i$
+
+\newline
+$E(y_i) = \mu_i$,
+
+<div align="left">
+<p>&nbsp;</p>
+
+\newline
+where $D_{i1} = 1$ if $G_i = 1$, $D_{i2} = 1$ if $G_i = 2$ and generally $D_{ij} = 1$ if $G_i = j$, otherwise $D_{ij} = 0$. $X_{ik}$ is set of additional variables not correlated with G. 
+
+\newline
+
+Our task is to find differences in conditional mean of y when we change value of $G$ (for example G = 1 and G = 2) and keep additional X variables constant, by using following equation:
+
+<div align="center">
+<p>&nbsp;</p>
+
+
+\newline
+
+
+$t = \frac {b_1 - b_2} {\sqrt{Var(b_1-b_2)}}$
+
+\newline
+
+<div align="left">
+
+<p>&nbsp;</p>
+
+_Factorplot_ package uses upper-traingular tile plot where each row-by-column entry display pairwise difference between coefficients
+<p>&nbsp;</p>
+
+## 2.1 Example 1#
+<p>&nbsp;</p>
+
+In the first example, we analyze dataframe _Ornstein_ from package _car_. The Model in this case is:
+<p>&nbsp;</p>
+
+\newline
+$log(\mu_i) = \beta_0 + \beta_{1}log_2(Assets_i) + \gamma Sector_{ij} + \theta Nation_{im}$
+
+\newline
+$Interlocks_{i} \sim Poisson(\mu_i)$ ,
+<p>&nbsp;</p>
+
+\newline
+where $\gamma$ is a set of coefficients on the j = 9 category dummy variables which represent 10 industry sectors in dataframe and $\theta$ represents m = 3 coefficents for 4 nations in the dataset. We want to visualize which sectors have the biggest impact on conditional means of _Interlocks_.
+
+<p>&nbsp;</p>
+Picture from article:
+```{r fig.width=7, fig.height=7, fig.align='center'}
+
+library(png)
+library(grid)
+img <- readPNG("Ex1.1.png")
+grid.raster(img)
+```
+<p>&nbsp;</p>
+
+Reproduced plot (code was copied from article)
+```{r, fig.width=6, fig.height=6, fig.align='center'}
+mod <- glm(interlocks ~ log2(assets) + nation + sector, data = Ornstein, family = poisson)
+
+fp <- factorplot(mod, adjust.method = "none", factor.variable = "sector", pval = 0.05, two.sided = TRUE, order="natural")
+
+plot(fp, abbrev.char = 100)
+
+```
+<p>&nbsp;</p>
+
+Surprisingly, in reproduced plot, all values are inversed, due to the fact that substraction order is changed from ($b_{col} - b_{row}$) to ($b_{row} - b_{col})$. It might be possible to change order but unfortunately I wasn't able to find relevant parameter.
+
+All other reproduced summaries from first example were identical to original.
+
+<p>&nbsp;</p>
+```{r}
+print(fp, sig = T)
+
+summary(fp)
+```
+<p>&nbsp;</p>
+
+## 2.2 Example 2#
+
+<p>&nbsp;</p>
+In second example, instead of using estimated model object, we supply a vector of point estimates and variances. Our goal is to calculate all possible pairwise comparisons from Table:
+
+```{r fig.width=10, fig.height=5, fig.align='center'}
+
+library(png)
+library(grid)
+img <- readPNG("Ex1.2.png")
+grid.raster(img)
+```
+
+<p>&nbsp;</p>
+Picture from article:
+```{r fig.width=10, fig.height=5, fig.align='center'}
+
+library(png)
+library(grid)
+img <- readPNG("Ex1.2.2.png")
+grid.raster(img)
+```
+
+<p>&nbsp;</p>
+
+Reproduced plot (code was copied from article)
+```{r, fig.width=7, fig.height=7, fig.align='center'}
+
+est1 <- log(c(1.00,2.12,1.44,1.31,1.44,1.46,0.90))
+var1 <- c(0.242,0.096,0.156,0.140,0.380,0.484,0.375)^2
+
+est2 <- log(c(1.00,4.33,3.89,4.14,10.8,21.9,15.5))
+var2 <- c(0.320,0.101,0.160,0.141,0.349,0.431,0.311)^2
+
+resdf <- 48+16+27+532+346+144+144+124+58+166+162+75+24+53+10+15+61+6+18+90+12-18
+names(est1) <- names(est2) <- c("Normal Gas","Chronic Gas", "Chronic A. Gas","IM I", "IM II", "IM III", "Dysplasia")
+
+plummer_fp1 <- factorplot(est1, var = var1, resdf = resdf, adjust.method = "none")
+plummer_fp2 <- factorplot(est2, var = var2, resdf = resdf, adjust.method = "none")
+
+plot(plummer_fp1, trans = "exp", abbrev.char = 100, scale.text = 1,scale.space = 1)
+plot(plummer_fp2, trans = "exp", abbrev.char = 100, scale.text = 1,scale.space = 1)
+
+```
+
+<p>&nbsp;</p>
+Same as in the first example, columns and rows were swapped. In original plot each cell has value which equals to $\frac {b_{col}} {b_{row}}$. In plot which was reproduced with code provided by the author, cells are equal to $\frac {b_{row}} {b_{col}}$. Note that legend in both pictures is incorrect.
+
+## 2.3 Example 3#
+<p>&nbsp;</p>
+
+Last example shows dependence between age and political preferences. It is based on multinomial logistic model and dataframe _france_ from package _nnet_.
+
+<p>&nbsp;</p>
+Plot from article:
+```{r fig.width=6, fig.height=6, fig.align='center'}
+
+library(png)
+library(grid)
+img <- readPNG("Ex1.3.png")
+grid.raster(img)
+```
+
+<p>&nbsp;</p>
+
+Reproduced plot (code was copied from article)
+```{r, fig.width=6, fig.height=6, fig.align='center'}
+data(france)
+france.mod <- multinom(vote ~ retnat + lrself + male + age, data = france)
+
+fp3 <- factorplot(france.mod, variable = "age")
+plot(fp3)
+
+```
+<p>&nbsp;</p>
+<div align="left">
+
+## 2.4 Summary
+Besides swapped columns and rows in calculations, reproduced plots and results are similar to original ones. Unfortunately, package seems to not be polished (e.g. not adequate legend in second plot) and author did not provided any supplementary materials for this paper.
+<p>&nbsp;</p>
+# 3. Article 2 - _Trafo_ Package
+https://journal.r-project.org/archive/2019/RJ-2019-054/index.html
+<p>&nbsp;</p>
+Second Article, "The R Package trafo for Transforming Linear Regression Models", written by Lily Medina, Ann-Kristin Kreutzmann, Natalia Rojas-Perilla and Piedad Castro, introduces framework for selecting and implementing a suitable transformation of the response variable for linear regression models. Transforming target variable might help to fulfill set of assumptions which are desired for using linear regression models such as normality or linearity. _Trafo_ offers not only transform functions but also diagnostic and checking functions. Authors provided one case study which shows the usability of this library. 
+
+## 3.1 Case Study
+<p>&nbsp;</p>
+Authors used dataset called _University_ from R package _Edcat_. Exemplary linear model will predict how study fees (stfees) raise net assets (nassets) of univerisites. 
+
+```{r}
+# Laod data set: Provision of University Teaching and Research
+data(University) 
+# Fit the linear model
+linMod <- lm(nassets ~ stfees, data = University)
+```
+<p>&nbsp;</p>
+Our goal is to find a suitable transformation for this model by using _trafo_ library. Checking if model needs variable transformation can be conducted by _assumptions()_ function. It returns various tests for normality and homoscedasticity. Additionally, it creates scatter plots for checking linear relation for untrasformed and transformed data. 
+
+```{r fig.width=7, fig.height=7, fig.align='center', warning=FALSE}
+
+assumptions(linMod)
+
+```
+Numbers in the upper right corner represents correlation coefficient between the dependent and independent variable.
+
+On the basis of _assumption()_ results, authors decided that Box-Cox transformation is suitable for this dataset. In next step we will use _trafo_lm()_ and _diagnostics()_ for more detailed comparison between transformed and untransformed model. 
+
+
+```{r}
+
+# Get trafo object
+linMod_trafo <- trafo_lm(object = linMod)
+
+# Check residuals
+diagnostics(linMod_trafo)
+
+```
+<p>&nbsp;</p>
+
+## 3.2 Additional plots for comparisions
+<p>&nbsp;</p>
+
+_Trafo_ offers various comparative plots:
+<p>&nbsp;</p>
+
+```{r fig.width=7, fig.height=7, fig.align='center', warning=FALSE}
+
+# Get residual plots
+plot(linMod_trafo)
+
+
+```
+<p>&nbsp;</p>
+
+## 3.3 Comparing two transformed models
+<p>&nbsp;</p>
+We can also compare different transformations on the same model by using _trafo_compare()_ function. 
+<p>&nbsp;</p>
+```{r fig.width=7, fig.height=7, fig.align='center', warning=FALSE}
+# Compare the simple log with Box-Cox
+boxcox_uni <- boxcox(linMod)
+log_uni <- logtrafo(linMod)
+
+# Use compare_trafo function
+linMod_comp <- trafo_compare(object = linMod,trafos = list(boxcox_uni, log_uni))
+diagnostics(linMod_comp)
+```
+<p>&nbsp;</p>
+
+## 3.4 Summary
+
+To sum up, _trafo_ library is interesting tool which helps to transform variables in linear regression models. Code and results stated in article are fully and easily reproducible. Moreover, R script provided by authors extends material showed in article and gives us even more plots and cases.
+
+# 4. Article 3 - Optimal Asset Pricing
+https://www.jstatsoft.org/article/view/v058i11
+<p>&nbsp;</p>
+
+Last article "Optimal Asset Pricing" written by Rolf Turner, Pradeep Banerjee, Rayomand Shahlori presents solution for determining the optimal price of an asset which value drops to zero after given deadline (e.g. flight tickets or products with expiry date). Package _AssetPricing_ provides functions for maximising total revenue from this kind of "perishable" assets. 
+<p>&nbsp;</p>
+
+## 4.1 Example 1#
+<p>&nbsp;</p>
+
+In the first example, we suppose that the possible prices in discrete price setting are 60$, 150$ and 200$. Price sensitivity function is given by 
+\newline
+<div align="centre">
+$$S(x, t) = \begin{cases}
+1, & \text if & x = 60\\
+e^{-2t}, & \text if & x = 150\\
+e^{-4t}, & \text if & x = 200\\
+\end{cases}$$
+<div align="left">
+
+Customers arrive according to a constant intensity Poisson process with intensity $\lambda = 100$. Additionally, we suppose that time to departure is 1 time unit and that customers always arrive singly. We want to calculate the optimal pricing policy using _xsolve_ function from _AssetsPricing_. 
+
+```{r, cache=TRUE}
+# Note: This must be version 0.1-0 or later of the package.
+
+
+# Example 1:
+S <- function(x, t) 
+  ifelse(x == 60, 1, ifelse(x == 150, exp(-2 * t), exp(-4 * t)))
+optPrice01 <- xsolve(S = S, lambda = 100, tmax = 1, gprob = 1, qmax = 100, prices = c(60, 
+  150, 200), alpha = 1, type = "sip")
+Y <- rep(optPrice01$x[90], 100)
+attributes(Y) <- attributes(optPrice01$x)
+comment(Y) <- "Prices constant over q."
+Cmpre <- vsolve(x = Y, S = S, lambda = 100)
+
+```
+
+Expected revenue under suboptimal policy:
+```{r, cache=TRUE}
+
+Cmpre$v[[50]](0.8)
+
+```
+
+Expected revenue under optimized pricing policy:
+```{r, cache=TRUE}
+optPrice01$v[[50]](0.8)
+
+```
+
+
+Unfortunately I wasn't able to reproduce the most important part of _AssetsPricing_ output - traces of optimal prices plots. Using authors script gives following error:
+
+```{r fig.width=10, fig.height=2, fig.align='center'}
+img <- readPNG("Ex3.1.png")
+grid.raster(img)
+```
+<p>&nbsp;</p>
+Apparently, _optPrice01_ which is object of _AssetPricing_ class uses to much stack-based memory. I tried to run R script in Bash after doubling C stack usage limit, but result was similar to previous attempt.
+```{r fig.width=10, fig.height=2, fig.align='center'}
+img <- readPNG("Ex3.2.png")
+grid.raster(img)
+```
+<p>&nbsp;</p>
+
+## 4.1 Other Examples#
+The same problem occured in the rest of examples. Only figures that I could reproduce were figure 8,9 and 10 from example 4. They don't use _optPrice01_, _optPrice02_ or _optPrice03_ objects. Each object consists of 300 functions what seems to be reason for these memory space issues. 
+```{r, cache = TRUE}
+# Example 4:
+Kn <- c(2, 6, 10, 14)
+
+# (1) With the flat spot as in Pradeep's original example.
+A <- matrix(c(1, 1.5, 0, 0, 1, 1, 2.5, 0, 1, 1, 1, 3.5), nrow = 3, byrow = TRUE)
+
+B <- matrix(c(0, -0.25, 0, 0, 0, 0, -0.25, 0, 0, 0, 0, -0.25), nrow = 3, byrow = TRUE)
+
+Lambda <- function(t) {
+  tn <- 1:4
+  C <- matrix(c(0, 12, 12, 12, 0, -16, 16, 64, 20, 30, 30, 0), nrow = 4)
+  D <- matrix(c(12, 0, 0, 0, 0, 16, 0, -16, 0, -10, -10, 0), nrow = 4)
+  s <- cut(t, breaks = c(0, tn), include.lowest = TRUE, labels = tn)
+  s <- as.numeric(levels(s)[s])
+  M <- matrix(C[s, ] + D[s, ] * t, ncol = ncol(C))
+  M[!is.finite(M)] <- 0
+  M
+}
+
+Alpha <- vector("list", 4)
+for (k in 1:4) {
+  Alpha[[k]] <- with(list(A = A, lambda = Lambda), eval(bquote(function(t) {
+    lll <- lambda(t)
+    dnm <- apply(lll, 1, sum)
+    dnm[dnm == 0] <- 1
+    lll %*% A[, .(force(k))]/dnm
+  })))
+}
+Beta <- vector("list", 4)
+for (k in 1:4) {
+  Beta[[k]] <- with(list(B = B, lambda = Lambda), eval(bquote(function(t) {
+    lll <- lambda(t)
+    dnm <- apply(lll, 1, sum)
+    dnm[dnm == 0] <- 1
+    lll %*% B[, .(force(k))]/dnm
+  })))
+}
+S1 <- buildS(Alpha, Beta, Kn, 4)
+
+# (2) Without the flat-at-zero spot which Pradeep's example has.
+
+A <- matrix(c(1, 1.495, 0.01, 0.01, 1, 1, 2.485, 0.01, 1, 1, 1, 3.475), nrow = 3, 
+  byrow = TRUE)
+
+B <- matrix(c(0, -0.2475, 0, 0, 0, 0, -0.2475, 0, 0, 0, 0, -0.2475), nrow = 3, byrow = TRUE)
+
+Alpha <- vector("list", 4)
+for (k in 1:4) {
+  Alpha[[k]] <- with(list(A = A, lambda = Lambda), eval(bquote(function(t) {
+    lll <- lambda(t)
+    dnm <- apply(lll, 1, sum)
+    dnm[dnm == 0] <- 1
+    lll %*% A[, .(force(k))]/dnm
+  })))
+}
+Beta <- vector("list", 4)
+for (k in 1:4) {
+  Beta[[k]] <- with(list(B = B, lambda = Lambda), eval(bquote(function(t) {
+    lll <- lambda(t)
+    dnm <- apply(lll, 1, sum)
+    dnm[dnm == 0] <- 1
+    lll %*% B[, .(force(k))]/dnm
+  })))
+}
+S2 <- buildS(Alpha, Beta, Kn, 4)
+
+# Clean up:
+rm(Kn, A, B, Lambda, Alpha, Beta, k)
+
+L0 <- get("lambda", envir = environment(get("alpha", envir = environment(S2))[[1]]))
+Lambda <- function(t) 
+  apply(L0(t), 1, sum)
+
+# The following call takes about 7 or 8 minutes on an x86_64 laptop:
+XPwl <- xsolve(type = "sip", tmax = 4, qmax = 30, lambda = Lambda, S = S2, alpha = 1, 
+  gprob = 1, nout = 1000)
+Xp <- seq(0, 14, length = 51)
+
+# The following call takes about 6 or 7 minutes on an x86_64 laptop:
+XPwlDA <- xsolve(type = "sip", tmax = 4, qmax = 30, lambda = Lambda, S = S2, alpha = 1, 
+  gprob = 1, prices = Xp) 
+```
+
+```{r}
+
+# Figure 8.
+Lambda <- function(t) {
+  l1 <- function(t) {
+    aaa <- c(0, 12, 12, 12)
+    bbb <- c(12, 0, 0, 0)
+    i <- sapply(t, function(u, mung) {
+      min(which(u <= mung))
+    }, mung = 1:4)
+    aaa[i] + bbb[i] * t
+  }
+  l2 <- function(t) {
+    aaa <- c(0, -16, 16, 64)
+    bbb <- c(0, 16, 0, -16)
+    i <- sapply(t, function(u, mung) {
+      min(which(u <= mung))
+    }, mung = 1:4)
+    aaa[i] + bbb[i] * t
+  }
+  l3 <- function(t) {
+    aaa <- c(20, 30, 30, 0)
+    bbb <- c(0, -10, -10, 0)
+    i <- sapply(t, function(u, mung) {
+      min(which(u <= mung))
+    }, mung = 1:4)
+    aaa[i] + bbb[i] * t
+  }
+  cbind(l1(t), l2(t), l3(t))
+}
+
+S <- function(x) {
+  kn <- c(2, 6, 10, 14)
+  S1 <- function(x) {
+    aaa <- c(1, 1.495, 0.01, 0.01)
+    bbb <- c(0, -0.2475, 0, 0)
+    i <- sapply(x, function(u, mung) {
+      min(which(u <= mung))
+    }, mung = kn)
+    aaa[i] + bbb[i] * x
+  }
+  S2 <- function(x) {
+    aaa <- c(1, 1, 2.485, 0.01)
+    bbb <- c(0, 0, -0.2475, 0)
+    i <- sapply(x, function(u, mung) {
+      min(which(u <= mung))
+    }, mung = kn)
+    aaa[i] + bbb[i] * x
+  }
+  S3 <- function(x) {
+    aaa <- c(1, 1, 1, 3.475)
+    bbb <- c(0, 0, 0, -0.2475)
+    i <- sapply(x, function(u, mung) {
+      min(which(u <= mung))
+    }, mung = kn)
+    aaa[i] + bbb[i] * x
+  }
+  cbind(S1(x), S2(x), S3(x))
+}
+
+
+MAINS <- c("Bargain hunters", "Tourists", "Business Travelers")
+
+X <- seq(0, 14, length = 101)
+MX <- S(X)
+OP <- par(mfrow = c(2, 2), mar = c(4.1, 4.1, 2.1, 0.6))
+for (j in 1:3) {
+  plot(X, MX[, j], type = "l", axes = FALSE, ylim = c(0, 1.1), xlab = "price", 
+    ylab = "probability", main = MAINS[j])
+  axis(side = 2, at = c(0, 0.25, 0.5, 0.75, 1))
+  axis(side = 1, at = c(0, 2, 6, 10, 14))
+  box()
+}
+
+# Figure 9.
+Ss <- seq(0, 4, length = 101)
+Ms <- Lambda(Ss)
+par(mfrow = c(2, 2), mar = c(4.1, 4.1, 2.1, 0.6))
+for (j in 1:3) {
+  plot(Ss, Ms[, j], type = "l", ylim = c(0, 20), xlab = "(residual) time", ylab = "intensity", 
+    main = MAINS[j])
+}
+par(OP)
+
+# Figure 10.
+Xp <- seq(0, 14, length = 41)
+Yt <- seq(0, 4, length = 41)
+Z <- S2(Xp, Yt)
+```
+
+```{r fig.width=7, fig.height=7, fig.align='center', warning=FALSE}
+
+persp(Xp, Yt, Z, theta = 150, phi = 30, r = 4, xlab = "price", ylab = "residual time", 
+  col = "yellow", zlab = "probability", ticktype = "detailed", xlim = c(0, 15)) 
+```
+
+## 4.3 Summary
+_AssetPricing_ library might be interesting package for determining optimal prices for assets. Although, authors provided supplementary R script to replicate all calculations and charts presented in paper, they are unreproducible in reasonable time and with limited memory resources. It is coused by _optPrice0i_ objects which require excessive amount of stack memory. 
