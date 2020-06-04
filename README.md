@@ -195,7 +195,7 @@ Wynikiem projektu powinien być krótki artykuł naukowy (40 pkt.), minimum 3 st
 Podział punktów w ramach artykułu
 - Abstrakt: 5 pkt.
 - Introduction + Motivation: 10 pkt.
-- Opis metodologii i wyników: 15 pkt. (oddanie po 5.05.2020 max 10 pkt.)
+- Opis metodologii i wyników: 15 pkt. 
 - Wnioski: 10 pkt.
 
 Projekt nalezy zaprezentować w postaci Lightning Talka na jednym z ostatnich wykładów (15 pkt.).
