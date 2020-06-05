@@ -1,0 +1,123 @@
+###########################################################
+#
+# This file contains R commands to produce all figures and
+# tables in "The Generalized Pairs Plot" by Emerson, Green,
+# Schloerke, Crowley, Cook, Hofmann, and Wickham (2011).
+#
+###########################################################
+
+################################################
+# Figure 1: The iris data set is included with R
+
+pdf("iris.pdf")
+pairs(iris)
+dev.off()
+
+##################################################
+# Figure 1S: Supplemental iris plot using coloring
+
+pdf("Figure1S.pdf")
+pairs(iris[,-5], col=as.numeric(iris$Species))
+dev.off()
+
+#######################################################
+# Figure 2: The tip data is included in package reshape
+
+library(reshape)
+library(gpairs)
+tips$day<-factor(tips$day, levels=c("Thur", "Fri", "Sat", "Sun"))
+tips$percent <- 100 * tips$tip / tips$total_bill
+
+pdf("tips.pdf")
+gpairs(tips[,c(2,1,3,5,8)],
+       upper.pars=list(conditional="boxplot"))
+dev.off()
+
+###############################################################
+# Table 1: A subset of the 2010 Environmental Performance Data;
+#          the full data set is available from
+#          http://epi.yale.edu/
+
+library(YaleToolkit)
+y <- read.csv("EPI2010subset.csv")
+
+whatis(y)
+
+################################################################
+# Figure 3: A subset of the 2010 Environmental Performance Data;
+#          the full data set is available from
+#          http://epi.yale.edu/.  A comparable plot may be
+#          obtained using boxplot(), but doesn't allow quite the
+#          same formatting.
+
+y <- read.csv("EPI2010subset.csv")
+
+pdf("section3boxplot.pdf")
+par(mar=c(5, 7, 4, 2))
+box.res <- boxplot(split(y$ENVHEALTH, y$Landlock), horizontal=TRUE, 
+                   xlab="Environmental Health", plot=FALSE)
+bxp(box.res, frame.plot=FALSE, horizontal=TRUE, 
+    xlab="Environmental Health", yaxt='n')
+axis(2, tick=FALSE, at=c(1,2), labels=c("Not Landlocked", "Landlocked"),
+     las=2)
+dev.off()
+
+################################################################
+# Figure 4: A subset of the 2010 Environmental Performance Data;
+#          the full data set is available from
+#          http://epi.yale.edu/.
+
+library(barcode)
+y <- read.csv("EPI2010subset.csv")
+
+# One way to change the factor labels and then produce the barcode:
+foo <- split(y$ENVHEALTH, y$Landlock)
+names(foo) <- c("Not Landlocked", "Landlocked")
+
+pdf("section3barcode.pdf")
+barcode(foo, xlab="Environmental Health", outerbox=FALSE, fontsize=12)
+dev.off()
+
+################################################################
+# Figure 5: A subset of the 2010 Environmental Performance Data;
+#          the full data set is available from
+#          http://epi.yale.edu/.
+
+library(gpairs)
+y <- read.csv("EPI2010subset.csv")
+
+usa <- as.numeric(y$Country=="United States of America")
+
+pdf("epigpairs.pdf")
+gpairs(y[,-1], lower.pars=list(scatter="stats"), outer.rot=c(90,0),
+       scatter.pars=list(pch=19))
+       #, col=1+usa, size=unit(0.25*(1+usa),"char")))
+dev.off()
+
+###################################################################
+# Table 2: A subset of the NRC data for programs in statistics;
+#          the complete NRC data are available from
+#          http://sites.nationalacademies.org/PGA/Resdoc/index.htm
+
+library(YaleToolkit)
+nrc <- read.csv("nrcstatistics.csv")
+
+whatis(nrc)
+
+
+###################################################################
+# Figure 6: A subset of the NRC data for programs in statistics;
+#           the complete NRC data are available from
+#           http://sites.nationalacademies.org/PGA/Resdoc/index.htm
+
+library(GGally)
+nrc <- read.csv("nrcstatistics.csv")
+
+pdf("nrc.pdf")
+pdfPlot <- ggpairs(nrc, lower=list(combo="facetdensity"), upper=list(combo="box"),
+                   title = "NRC Statistics")
+print(pdfPlot)
+dev.off()
+
+
+

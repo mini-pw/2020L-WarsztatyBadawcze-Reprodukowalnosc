@@ -1,0 +1,35 @@
+###########################################################
+#
+# This file documents the data sources for
+# "The Generalized Pairs Plot" by Emerson, Green,
+# Schloerke, Crowley, Cook, Hofmann, and Wickham (2011).
+#
+###########################################################
+
+
+The iris data set is included with R, typically called
+Fisher's iris data but originally collected by
+Anderson (1935), cited in the paper bibliography.
+
+
+The tip data set is included in package reshape, originally
+reported in Bryant and Smith (1995), cited in the paper
+bibliography.
+
+
+A subset of the 2010 Environmental Performance Index data is
+included with the Supplementary Materials (EPI2010subset.csv);
+the full data set is available from 
+	http://epi.yale.edu/
+and is cited in the paper bibliography.
+
+
+A subset of the NRC data is included with the Supplementary
+Materials for programs in statistics (nrcstatistics.csv);
+the complete NRC data are available from
+	http://sites.nationalacademies.org/PGA/Resdoc/index.htm
+as cited in the paper bibliography.
+
+
+
+
